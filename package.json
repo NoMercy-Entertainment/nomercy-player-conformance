@@ -1,0 +1,17 @@
+{
+  "name": "@nomercy-entertainment/player-parity",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "report": "tsx src/report.ts",
+    "check": "tsx src/check.ts",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^4.0.0"
+  }
+}

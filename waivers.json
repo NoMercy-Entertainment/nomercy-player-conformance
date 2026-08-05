@@ -1,0 +1,9 @@
+{
+  "addClasses": "DOM class manipulation on the mount element. Compose has no class list; the native chrome styles itself with modifiers.",
+  "removeClasses": "DOM class manipulation on the mount element. Compose has no class list; the native chrome styles itself with modifiers.",
+  "createElement": "Builds an HTMLElement for the web chrome. The native chrome is composed, not constructed.",
+  "createSVG": "Builds an SVG node for the web chrome. The native chrome draws vectors through its own toolkit.",
+  "createButton": "Builds a chrome button element. The native chrome composes its own controls.",
+  "container": "The HTMLElement the web player mounts into. A native player is handed a surface through the video backend port rather than owning a view.",
+  "videoElement": "The HTMLVideoElement the web player drives. The native equivalent is the backend's surface, which the port exposes rather than the player."
+}
