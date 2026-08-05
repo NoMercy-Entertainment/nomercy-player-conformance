@@ -37,11 +37,32 @@ function kotlinSources(dir: string, depth: number = 0): string[] {
   return files;
 }
 
+// `<repo>/src` plus `<repo>/<module>/src`. Deeper than that is a source set,
+// which kotlinSources already walks.
+function moduleSources(root: string): string[] {
+  const roots: string[] = [];
+
+  for (const entry of ['.', ...readdirSync(root)]) {
+    const candidate = join(root, entry, 'src');
+    try {
+      if (statSync(candidate).isDirectory()) roots.push(candidate);
+    }
+    catch {
+      continue; // not a module
+    }
+  }
+
+  return roots.flatMap(dir => kotlinSources(dir));
+}
+
 function harvest(pattern: RegExp): Set<string> {
   const found = new Set<string>();
 
   for (const repo of Object.values(NATIVE)) {
-    for (const file of kotlinSources(join(repo.root, 'src'))) {
+    // Every Gradle module, not just the root one. The ASS renderer lives in
+    // subtitles-libass and the fakes in testing, so a sweep of `<repo>/src`
+    // alone reported three codes as unraised that the library raises.
+    for (const file of moduleSources(repo.root)) {
       const text = readFileSync(file, 'utf8');
       for (const match of text.matchAll(pattern)) found.add(match[1]);
     }
