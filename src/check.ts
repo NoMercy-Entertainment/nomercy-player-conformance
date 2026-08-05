@@ -10,7 +10,14 @@ const BASELINE: string = resolve(dirname(fileURLToPath(import.meta.url)), '..', 
 type Baseline = Record<string, number>;
 
 export function toBaseline(result: ParityResult): Baseline {
-  return Object.fromEntries(result.groups.map(group => [`${group.player}:${group.group}`, group.ok]));
+  return {
+    ...Object.fromEntries(result.groups.map(group => [`${group.player}:${group.group}`, group.ok])),
+    // The string surfaces ratchet too. An event name or an error code silently
+    // dropping is the same regression as a method going missing, and neither
+    // belongs to a method group.
+    'events': result.events.present,
+    'errors': result.errors.present,
+  };
 }
 
 /**

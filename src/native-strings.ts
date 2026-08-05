@@ -13,12 +13,24 @@ import { NATIVE } from './paths';
 const EVENT_KEY = /EventKey(?:<[^>]*>)?\("([^"]+)"\)/g;
 const ERROR_CODE = /"([a-z0-9-]+:[a-z0-9-]+\/[a-z0-9-]+)"/g;
 
-function kotlinSources(dir: string): string[] {
+// Main source sets only.
+//
+// The conformance suites list every code the port has NOT reached, as string
+// literals, so a sweep that included test sources found all of them and
+// reported the catalog complete. The ledger of what is missing is not evidence
+// that it is there.
+function isTestSourceSet(name: string): boolean {
+  return /Test$/.test(name);
+}
+
+function kotlinSources(dir: string, depth: number = 0): string[] {
   const files: string[] = [];
 
   for (const entry of readdirSync(dir)) {
+    if (depth === 0 && isTestSourceSet(entry)) continue;
+
     const path = join(dir, entry);
-    if (statSync(path).isDirectory()) files.push(...kotlinSources(path));
+    if (statSync(path).isDirectory()) files.push(...kotlinSources(path, depth + 1));
     else if (entry.endsWith('.kt')) files.push(path);
   }
 

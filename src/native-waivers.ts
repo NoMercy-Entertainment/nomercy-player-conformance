@@ -29,6 +29,28 @@ function conformanceFiles(dir: string): string[] {
   return found;
 }
 
+// The error catalog's permanent exemptions, and only those. NOT_YET_PORTED is
+// deliberately excluded: that file says in its own words that the list
+// shrinking is the measure of the port, so those codes are gaps, not excuses.
+const ERROR_LEDGER = /(?:WEB_ONLY|NOT_THE_PLAYER)\s*=\s*setOf\(([\s\S]*?)\n\s*\)/g;
+
+/** Error codes the native libraries have declared they will never raise. */
+export function excusedErrors(): Set<string> {
+  const excused = new Set<string>();
+
+  for (const repo of Object.values(NATIVE)) {
+    for (const file of conformanceFiles(join(repo.root, 'src'))) {
+      if (!file.endsWith('ErrorCatalogConformanceTest.kt')) continue;
+
+      for (const block of readFileSync(file, 'utf8').matchAll(ERROR_LEDGER)) {
+        for (const entry of block[1].matchAll(ENTRY)) excused.add(entry[1]);
+      }
+    }
+  }
+
+  return excused;
+}
+
 /** Every method the native libraries have declared they will never carry. */
 export function excusedNatively(): Set<string> {
   const excused = new Set<string>();

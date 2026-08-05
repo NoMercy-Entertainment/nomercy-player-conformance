@@ -50,5 +50,7 @@
   "video:core/time": 9,
   "video:core/transport": 9,
   "video:core/volume": 6,
-  "video:video/player": 18
+  "video:video/player": 18,
+  "events": 175,
+  "errors": 24
 }
