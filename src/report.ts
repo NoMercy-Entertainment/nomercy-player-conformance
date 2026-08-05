@@ -62,8 +62,13 @@ export function renderMarkdown(result: ParityResult): string {
     '',
     '## Waived — declared by the web because it is the web',
     '',
+    'Membership comes from each library\'s own conformance ledger; the reasons live in `waivers.json`.',
+    '',
     waived.length === 0 ? 'none' : waived.join('\n'),
     '',
+    ...(result.ledgerDisagreements.length === 0
+      ? []
+      : ['### The two ledgers disagree', '', result.ledgerDisagreements.map(line => `- ${line}`).join('\n'), '']),
     `## Events — ${result.events.present}/${result.events.total}`,
     '',
     result.events.missing.length === 0

@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 
 import { nativeErrors, nativeEvents } from './native-strings';
+import { excusedNatively } from './native-waivers';
 import { callableArities, NativeMember, parseAbiDump, resolveMembers } from './native-surface';
 import { CONTRACT, NATIVE, PLAYER_CLASS, WAIVERS } from './paths';
 
@@ -127,6 +128,8 @@ export interface StringSurface {
 
 export interface ParityResult {
   contractVersion: string;
+  /** Waived without a written reason, and reasons excusing nothing. */
+  ledgerDisagreements: string[];
   groups: GroupResult[];
   /** Public native members on the player that the contract never names. */
   extra: { player: Player; member: string }[];
@@ -166,13 +169,19 @@ function surfaceOf(player: Player): Map<string, NativeMember[]> {
 export function compare(contract: Contract = readContract(), waivers: Waivers = readWaivers()): ParityResult {
   const groups = new Map<string, GroupResult>();
   const extra: ParityResult['extra'] = [];
+  const excused = excusedNatively();
+
+  const ledgerDisagreements = [
+    ...[...excused].filter(name => !waivers[name]).map(name => `${name}: excused by the libraries with no reason written here`),
+    ...Object.keys(waivers).filter(name => !excused.has(name)).map(name => `${name}: a reason here that no library excuses`),
+  ].sort();
 
   for (const player of ['video', 'music'] as const) {
     const byName = surfaceOf(player);
     const named = new Set<string>();
 
     for (const method of contract.methods.filter(entry => entry.player === player)) {
-      const result = grade(method, byName, waivers[method.name] ?? waivers[`${player}:${method.name}`]);
+      const result = grade(method, byName, excused.has(method.name) ? (waivers[method.name] ?? 'excused by the library with no reason written') : undefined);
       named.add(method.name);
       named.add(`get${capitalize(method.name)}`);
       named.add(`set${capitalize(method.name)}`);
@@ -195,6 +204,7 @@ export function compare(contract: Contract = readContract(), waivers: Waivers = 
 
   return {
     contractVersion: contract.version,
+    ledgerDisagreements,
     groups: ordered,
     extra: extra.sort((a, b) => `${a.player}:${a.member}`.localeCompare(`${b.player}:${b.member}`)),
     totals: {

@@ -5,5 +5,8 @@
   "createSVG": "Builds an SVG node for the web chrome. The native chrome draws vectors through its own toolkit.",
   "createButton": "Builds a chrome button element. The native chrome composes its own controls.",
   "container": "The HTMLElement the web player mounts into. A native player is handed a surface through the video backend port rather than owning a view.",
-  "videoElement": "The HTMLVideoElement the web player drives. The native equivalent is the backend's surface, which the port exposes rather than the player."
+  "videoElement": "The HTMLVideoElement the web player drives. The native equivalent is the backend's surface, which the port exposes rather than the player.",
+  "experimental": "A runtime override table that swaps player methods by string key. Kotlin has no prototype to patch and no string-keyed method table, so the surface cannot exist; a native consumer overrides by subclassing an open member.",
+  "audioContext": "The Web Audio AudioContext the browser hands out. Native audio processing goes through the AudioDspGraph port, which is a different object with a different lifetime, not this one renamed.",
+  "selectAudioOutput": "The browser's own output-device picker (navigator.mediaDevices.selectAudioOutput, Chrome only). No native platform offers a picker to open; routing to a known device is audioOutput(id)."
 }
