@@ -1,7 +1,7 @@
 {
   "music:core/abr": 3,
   "music:core/activity": 2,
-  "music:core/audio-output": 2,
+  "music:core/audio-output": 1,
   "music:core/auth": 4,
   "music:core/base-url-audio-context": 1,
   "music:core/cast": 2,
@@ -27,7 +27,7 @@
   "music:music/player": 5,
   "video:core/abr": 3,
   "video:core/activity": 2,
-  "video:core/audio-output": 2,
+  "video:core/audio-output": 1,
   "video:core/auth": 4,
   "video:core/base-url-audio-context": 1,
   "video:core/cast": 2,

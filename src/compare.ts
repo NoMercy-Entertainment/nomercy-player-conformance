@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 
 import { nativeErrors, nativeEvents } from './native-strings';
-import { NativeMember, parseAbiDump, resolveMembers } from './native-surface';
+import { callableArities, NativeMember, parseAbiDump, resolveMembers } from './native-surface';
 import { CONTRACT, NATIVE, PLAYER_CLASS, WAIVERS } from './paths';
 
 export type Player = 'video' | 'music';
@@ -12,6 +12,7 @@ export interface ContractMethod {
   player: Player;
   group: string;
   kind: 'accessor' | 'method' | 'property';
+  arities: number[];
 }
 
 export interface Contract {
@@ -27,11 +28,14 @@ export interface Contract {
  *   name is present, so a name-only check calls this done; it is not.
  * `renamed` — present, but as `getFoo`/`setFoo` where the contract names a
  *   callable pair. The no-aliases rule bans that spelling.
+ * `arity` — the name is there but not callable the way the contract shows it.
+ *   The web's `selectAudioOutput()` opens a picker; a native one taking a device
+ *   id is a different action wearing the same name.
  * `waived` — the web declares it because it is the web. A waiver carries a
  *   reason and is listed, never silently folded into the total.
  * `missing` — no native declaration answers it.
  */
-export type Verdict = 'ok' | 'reader-only' | 'writer-only' | 'renamed' | 'waived' | 'missing';
+export type Verdict = 'ok' | 'reader-only' | 'writer-only' | 'arity' | 'renamed' | 'waived' | 'missing';
 
 export interface MethodResult {
   name: string;
@@ -88,7 +92,11 @@ export function grade(method: ContractMethod, byName: Map<string, NativeMember[]
   }
 
   if (method.kind === 'method') {
-    return { ...base, verdict: 'ok', native: direct.map(describe).join(' | ') };
+    const native = direct.map(describe).join(' | ');
+    const callable = new Set(direct.flatMap(callableArities));
+    const reachable = method.arities.length === 0 || method.arities.some(arity => callable.has(arity));
+
+    return { ...base, verdict: reachable ? 'ok' : 'arity', native };
   }
 
   // A stateful noun needs both halves: the no-argument reader and the writer.

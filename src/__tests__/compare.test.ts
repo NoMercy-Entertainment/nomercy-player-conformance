@@ -3,12 +3,12 @@ import { describe, expect, it } from 'vitest';
 import { ContractMethod, grade, indexMembers } from '../compare';
 import { NativeMember } from '../native-surface';
 
-function member(name: string, arity: number): NativeMember {
-  return { name, params: '', returns: 'V', arity, suspend: false, owner: 'Test' };
+function member(name: string, arity: number, hasDefaults = false): NativeMember {
+  return { name, params: '', returns: 'V', arity, suspend: false, hasDefaults, owner: 'Test' };
 }
 
-function method(name: string, kind: ContractMethod['kind']): ContractMethod {
-  return { name, kind, signature: '', player: 'video', group: 'core/test' };
+function method(name: string, kind: ContractMethod['kind'], arities: number[] = []): ContractMethod {
+  return { name, kind, arities, signature: '', player: 'video', group: 'core/test' };
 }
 
 describe('grade', () => {
@@ -40,5 +40,16 @@ describe('grade', () => {
 
   it('reports an unported, unwaived method as missing', () => {
     expect(grade(method('audioContext', 'method'), indexMembers([]), undefined).verdict).toBe('missing');
+  });
+
+  it('fails a method the native side cannot be called the contract way', () => {
+    // The web picker takes nothing; this one demands a device id.
+    const routing = indexMembers([member('selectAudioOutput', 1)]);
+    expect(grade(method('selectAudioOutput', 'method', [0]), routing, undefined).verdict).toBe('arity');
+  });
+
+  it('accepts a shorter call site when the native parameter has a default', () => {
+    const withDefault = indexMembers([member('forward', 2, true)]);
+    expect(grade(method('forward', 'method', [0]), withDefault, undefined).verdict).toBe('ok');
   });
 });

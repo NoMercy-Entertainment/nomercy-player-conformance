@@ -19,6 +19,8 @@ export interface NativeMember {
   /** Parameter count, with a suspend function's trailing Continuation dropped. */
   arity: number;
   suspend: boolean;
+  /** True when some parameter has a default, so shorter call sites are legal. */
+  hasDefaults: boolean;
   /** The declaring class, so a report can say where a member came from. */
   owner: string;
 }
@@ -56,6 +58,7 @@ export function countParams(params: string): number {
 
 export function parseAbiDump(path: string): Map<string, NativeClass> {
   const classes = new Map<string, NativeClass>();
+  const defaulted = new Set<string>();
   let current: NativeClass | undefined;
 
   for (const line of readFileSync(path, 'utf8').split('\n')) {
@@ -85,7 +88,18 @@ export function parseAbiDump(path: string): Map<string, NativeClass> {
     // default arguments and the boxed constructor overloads. A port that
     // exposed only those would read as complete while calling one from Kotlin
     // is not how anybody writes it.
-    if (modifiers.includes('synthetic') || name.endsWith('$default') || name === '<init>') continue;
+    if (name === '<init>') continue;
+
+    // The `$default` bridge is a compiler artifact nobody calls, but its
+    // existence is the only evidence in the dump that a parameter has a default
+    // — which is what makes the shorter call site legal. It is recorded as a
+    // marker and never as a member.
+    if (name.endsWith('$default')) {
+      defaulted.add(name.slice(0, -'$default'.length));
+      continue;
+    }
+
+    if (modifiers.includes('synthetic')) continue;
 
     const params = member[3];
     const suspend = params.endsWith(CONTINUATION);
@@ -96,11 +110,28 @@ export function parseAbiDump(path: string): Map<string, NativeClass> {
       returns: member[4].trim(),
       arity: countParams(suspend ? params.slice(0, -CONTINUATION.length) : params),
       suspend,
+      hasDefaults: false,
       owner: current.name,
     });
   }
 
+  // Second pass: the bridge can be rendered after the member it belongs to.
+  for (const declared of classes.values()) {
+    for (const member of declared.members) {
+      member.hasDefaults = defaulted.has(member.name);
+    }
+  }
+
   return classes;
+}
+
+/** Every parameter count a member can legally be called with. */
+export function callableArities(member: NativeMember): number[] {
+  if (!member.hasDefaults) return [member.arity];
+
+  const counts: number[] = [];
+  for (let count = 0; count <= member.arity; count += 1) counts.push(count);
+  return counts;
 }
 
 /**

@@ -10,6 +10,7 @@ const MARK: Record<Verdict, string> = {
   'ok': 'ok',
   'reader-only': 'READER ONLY',
   'writer-only': 'WRITER ONLY',
+  'arity': 'WRONG ARITY',
   'renamed': 'RENAMED',
   'waived': 'waived',
   'missing': 'MISSING',
