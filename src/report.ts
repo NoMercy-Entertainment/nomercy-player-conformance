@@ -63,6 +63,18 @@ export function renderMarkdown(result: ParityResult): string {
     '',
     waived.length === 0 ? 'none' : waived.join('\n'),
     '',
+    `## Events — ${result.events.present}/${result.events.total}`,
+    '',
+    result.events.missing.length === 0
+      ? 'every contract event has a native key'
+      : `not emitted natively:\n${result.events.missing.map(name => `- \`${name}\``).join('\n')}`,
+    '',
+    `## Error codes — ${result.errors.present}/${result.errors.total}`,
+    '',
+    result.errors.missing.length === 0
+      ? 'every contract error code is raised natively'
+      : `never raised natively:\n${result.errors.missing.map(name => `- \`${name}\``).join('\n')}`,
+    '',
     '## Native members the contract does not name',
     '',
     result.extra.length === 0

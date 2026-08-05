@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 
+import { nativeErrors, nativeEvents } from './native-strings';
 import { NativeMember, parseAbiDump, resolveMembers } from './native-surface';
 import { CONTRACT, NATIVE, PLAYER_CLASS, WAIVERS } from './paths';
 
@@ -108,12 +109,33 @@ export interface GroupResult {
   methods: MethodResult[];
 }
 
+export interface StringSurface {
+  total: number;
+  present: number;
+  missing: string[];
+  /** Native strings the web contract never names. */
+  extra: string[];
+}
+
 export interface ParityResult {
   contractVersion: string;
   groups: GroupResult[];
   /** Public native members on the player that the contract never names. */
   extra: { player: Player; member: string }[];
   totals: { total: number; ok: number; waived: number; gaps: number };
+  events: StringSurface;
+  errors: StringSurface;
+}
+
+function gradeStrings(web: string[], native: Set<string>): StringSurface {
+  const wanted = new Set(web);
+
+  return {
+    total: wanted.size,
+    present: [...wanted].filter(name => native.has(name)).length,
+    missing: [...wanted].filter(name => !native.has(name)).sort(),
+    extra: [...native].filter(name => !wanted.has(name)).sort(),
+  };
 }
 
 /**
@@ -173,5 +195,7 @@ export function compare(contract: Contract = readContract(), waivers: Waivers = 
       waived: ordered.reduce((sum, group) => sum + group.waived, 0),
       gaps: ordered.reduce((sum, group) => sum + group.total - group.ok - group.waived, 0),
     },
+    events: gradeStrings(contract.events.map(event => event.name), nativeEvents()),
+    errors: gradeStrings(contract.errors, nativeErrors()),
   };
 }
