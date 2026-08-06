@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
+import { resolveMembers } from './native-surface';
 import { indexMembers } from './compare';
 import { NativeClass, parseAbiDump } from './native-surface';
 import { jvmDumps, NATIVE, REPO_ROOT } from './paths';
@@ -65,6 +66,17 @@ const ALIASES: Record<string, string[]> = {
   MediaSessionPlugin: ['MediaSessionPlugin', 'VideoMediaSessionPlugin', 'MusicMediaSessionPlugin'],
 };
 
+// Every dump, kept whole, so a supertype can be looked up by the name its
+// subclass records. Keyed by FULL name here; nativeClasses() below is the
+// simple-name index the web side matches against.
+function nativeDumps(): Map<string, NativeClass>[] {
+  const dumps: Map<string, NativeClass>[] = [];
+  for (const repo of Object.values(NATIVE)) {
+    for (const dump of jvmDumps(repo)) dumps.push(parseAbiDump(dump));
+  }
+  return dumps;
+}
+
 function nativeClasses(): Map<string, NativeClass> {
   const merged = new Map<string, NativeClass>();
 
@@ -96,6 +108,7 @@ export function comparePlugins(declarations: PluginDeclaration[] = readPluginSur
   }
 
   const native = nativeClasses();
+  const dumps = nativeDumps();
   const results: PluginResult[] = [];
 
   const candidatesFor = (name: string): NativeClass[] =>
@@ -123,8 +136,15 @@ export function comparePlugins(declarations: PluginDeclaration[] = readPluginSur
     let present = 0;
 
     for (const member of members) {
+      // INHERITED members count, because a consumer can call them.
+      //
+      // This read each class's own block only, so `use` and `dispose` — which
+      // every plugin gets from the base Plugin and which the base plainly
+      // declares — were scored missing on all of them. DrmPlugin passed purely
+      // because it happens to override `use` itself, which is what made the
+      // pattern look like real absence rather than an unwalked supertype.
       const has = candidatesFor(member.owner as string)
-        .some(declared => indexMembers(declared.members).has(member.name));
+        .some(declared => indexMembers(resolveMembers(declared.name, dumps)).has(member.name));
 
       if (has) present += 1;
       else missing.push(`${member.owner}.${member.name}`);
