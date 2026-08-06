@@ -185,6 +185,24 @@ export function compareGeometry(
 	const nativeByTag = new Map(native.elements.map(e => [e.name, e]));
 	const findings: GeometryFinding[] = [];
 
+	// Horizontal position is measured against the BAR, not the container.
+	//
+	// The controls pack from the bar's two ends, and the bar is not the same
+	// fraction of the container in both players — so a fullscreen button
+	// correctly pinned to the bar's right edge reads as 0.94 on one side and
+	// 0.76 on the other, and four correctly-placed controls came back as
+	// findings. What has to match is where a control sits ALONG THE BAR.
+	const webBar = web.elements.find(e => e.name === 'bottom-row');
+	const nativeBar = nativeByTag.get('nm-transport-bar');
+	const alongWebBar = (element: MeasuredElement): number =>
+		webBar ? (element.left - webBar.left) / webBar.width : element.left;
+	const alongNativeBar = (element: MeasuredElement): number =>
+		nativeBar ? (element.left - nativeBar.left) / nativeBar.width : element.left;
+
+	const inBar = (elements: MeasuredElement[], bar?: MeasuredElement): number =>
+		bar ? elements.filter(e => e !== bar && e.top >= bar.top - 0.01 && e.top < bar.top + bar.height + 0.01).length : 0;
+	const comparableRuns = inBar(web.elements, webBar) === inBar(native.elements, nativeBar);
+
 	for (const element of web.elements) {
 		const tag = OVERLAY_COUNTERPARTS[element.name];
 		if (!tag) continue;
@@ -201,10 +219,31 @@ export function compareGeometry(
 			findings.push({ id: element.name, nativeTag: tag, what: 'width', web: element.widthPx, native: counterpart.widthPx });
 		}
 
-		for (const axis of ['left', 'top'] as const) {
-			if (Math.abs(counterpart[axis] - element[axis]) > toleranceFraction) {
-				findings.push({ id: element.name, nativeTag: tag, what: axis, web: element[axis], native: counterpart[axis] });
-			}
+		if (Math.abs(counterpart.top - element.top) > toleranceFraction) {
+			findings.push({ id: element.name, nativeTag: tag, what: 'top', web: element.top, native: counterpart.top });
+		}
+
+		// Only when both sides drew the same controls.
+		//
+		// The bar packs from its ends, so one absent control shifts every
+		// control after it and the whole tail reads as misplaced. The native
+		// fixture's item carries no chapters, so its `next` sits two slots
+		// earlier than the web page's — which is a difference between two
+		// fixtures, not between two layouts, and reporting it as geometry is
+		// the same class of mistake as measuring against the wrong container.
+		//
+		// Order along the bar is the invariant that survives a missing control,
+		// and it has its own report: see chrome-report.
+		const webX = alongWebBar(element);
+		const nativeX = alongNativeBar(counterpart);
+		if (comparableRuns && Math.abs(nativeX - webX) > toleranceFraction) {
+			findings.push({
+				id: element.name,
+				nativeTag: tag,
+				what: 'left',
+				web: Math.round(webX * 10000) / 10000,
+				native: Math.round(nativeX * 10000) / 10000,
+			});
 		}
 	}
 
