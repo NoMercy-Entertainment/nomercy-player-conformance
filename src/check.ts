@@ -3,6 +3,8 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { compare, ParityResult } from './compare';
+import { nativeEmissions } from './emission';
+import { comparePlugins } from './plugins';
 
 const BASELINE: string = resolve(dirname(fileURLToPath(import.meta.url)), '..', 'baseline.json');
 
@@ -17,6 +19,13 @@ export function toBaseline(result: ParityResult): Baseline {
     // belongs to a method group.
     'events': result.events.present,
     'errors': result.errors.present,
+    // Every plugin ratchets on its own, for the same reason each method group
+    // does: "the chrome is empty" and "casting is done" are different facts and
+    // one total hides both.
+    ...Object.fromEntries(comparePlugins().filter(entry => entry.isPlugin).map(entry => [`plugin:${entry.plugin}`, entry.present])),
+    // Counted as a negative that may only fall: a key nothing can reach is a
+    // promise to a consumer that the library cannot keep.
+    'reachable-events': nativeEmissions().reachable.length,
   };
 }
 

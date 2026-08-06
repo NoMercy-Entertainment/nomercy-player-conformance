@@ -55,6 +55,11 @@ function moduleSources(root: string): string[] {
   return roots.flatMap(dir => kotlinSources(dir));
 }
 
+/** Every main-source Kotlin file across the three libraries' modules. */
+export function kotlinSourceFiles(): string[] {
+  return Object.values(NATIVE).flatMap(repo => moduleSources(repo.root));
+}
+
 function harvest(pattern: RegExp): Set<string> {
   const found = new Set<string>();
 

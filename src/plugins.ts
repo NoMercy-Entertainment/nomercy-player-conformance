@@ -36,6 +36,8 @@ export interface PluginDeclaration {
 
 export interface PluginResult {
   plugin: string;
+  /** False for the `<package>/src` buckets, which are adapters and kit, not plugins. */
+  isPlugin: boolean;
   /** Web classes this plugin declares, and whether a native class answers each. */
   classes: { name: string; ported: boolean }[];
   total: number;
@@ -113,7 +115,19 @@ export function comparePlugins(declarations: PluginDeclaration[] = readPluginSur
       else missing.push(`${member.owner}.${member.name}`);
     }
 
-    results.push({ plugin, classes, total: members.length, present, missing: missing.sort() });
+    results.push({
+      plugin,
+      // The extractor sweeps each package and files everything outside
+      // plugins/ under `<package>/src`. Those are adapters, parsers and kit
+      // internals — real surface, and not a plugin. Counted together they put
+      // 467 declarations into a plugin denominator and turned "how much of the
+      // chrome exists" into a number about the cue parsers.
+      isPlugin: !plugin.endsWith('/src'),
+      classes,
+      total: members.length,
+      present,
+      missing: missing.sort(),
+    });
   }
 
   return results.sort((a, b) => a.plugin.localeCompare(b.plugin));
