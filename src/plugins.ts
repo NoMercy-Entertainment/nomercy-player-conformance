@@ -26,6 +26,7 @@ const PLUGIN_SURFACE: string = resolve(
 
 export interface PluginDeclaration {
   plugin: string;
+  visibility?: 'public' | 'protected' | 'private';
   package: string;
   file: string;
   exported: boolean;
@@ -104,7 +105,19 @@ export function comparePlugins(declarations: PluginDeclaration[] = readPluginSur
     const owners: string[] = [...new Set(entries.map(entry => entry.owner).filter(name => name !== undefined))];
 
     const classes = owners.map(name => ({ name, ported: candidatesFor(name).length > 0 }));
-    const members = entries.filter(entry => entry.exported && entry.owner !== undefined && entry.kind === 'method');
+    // Public members only.
+    //
+    // A private method is the plugin's own machinery — `makeBox`,
+    // `rebuildChain`, `detectMobile` — and it is DOM and Web Audio plumbing
+    // that a Compose port answers with a different mechanism, not a same-named
+    // method. Grading it demanded the port reproduce a browser, and that is
+    // where two thirds of the plugin gap came from. Protected is the same
+    // argument one step weaker: it is a subclassing seam, not a consumer's.
+    const members = entries.filter(entry =>
+      entry.exported
+      && entry.owner !== undefined
+      && entry.kind === 'method'
+      && (entry.visibility ?? 'public') === 'public');
 
     const missing: string[] = [];
     let present = 0;

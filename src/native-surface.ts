@@ -32,7 +32,14 @@ export interface NativeClass {
 }
 
 const CLASS_HEADER = /^public\s+(?:[a-z]+\s+)*(?:class|interface)\s+([\w/$]+)(?:\s*:\s*(.+?))?\s*\{$/;
-const MEMBER = /^\tpublic\s+((?:[a-z]+\s+)*)fun\s+([\w$<>-]+)\s*\((.*)\)(.*)$/;
+// `protected` as well as `public`.
+//
+// The dump carries both and this matched only the first, so every member a
+// plugin exposes to its own subclasses was invisible. VideoKeyHandlerPlugin
+// declares eleven `protected fun addXKeys()` — the exact names the web plugin
+// declares — and the report read 0 of 20 for a class that had them all. A
+// ruler that cannot see half the members manufactures the gap it then measures.
+const MEMBER = /^\t(?:public|protected)\s+((?:[a-z]+\s+)*)fun\s+([\w$<>-]+)\s*\((.*)\)(.*)$/;
 
 const CONTINUATION = 'Lkotlin/coroutines/Continuation;';
 
