@@ -152,3 +152,61 @@ export function compareOverlays(
 		total: counted.length,
 	};
 }
+
+/**
+ * Does the counterpart land where the reference lays it out?
+ *
+ * Height and width are compared in the player's own units — a 40dp button and a
+ * 40px button are the same button, and that is the number a viewer sees. Left
+ * and top are compared NORMALISED, because the two players are not the same
+ * size on screen and a control anchored to the right edge sits at a different
+ * absolute x in each.
+ *
+ * A control that spans the container is exempt from the width check: it is as
+ * wide as it was given, and comparing 992 against 966 measures the two
+ * fixtures' widths rather than the two layouts.
+ */
+export interface GeometryFinding {
+	id: string;
+	nativeTag: string;
+	what: 'height' | 'width' | 'left' | 'top';
+	web: number;
+	native: number;
+}
+
+const SPANS_CONTAINER = 0.9;
+
+export function compareGeometry(
+	web: OverlayMeasurement,
+	native: OverlayMeasurement,
+	tolerancePx = 1,
+	toleranceFraction = 0.02,
+): GeometryFinding[] {
+	const nativeByTag = new Map(native.elements.map(e => [e.name, e]));
+	const findings: GeometryFinding[] = [];
+
+	for (const element of web.elements) {
+		const tag = OVERLAY_COUNTERPARTS[element.name];
+		if (!tag) continue;
+
+		const counterpart = nativeByTag.get(tag);
+		if (!counterpart) continue;
+
+		if (Math.abs(counterpart.heightPx - element.heightPx) > tolerancePx) {
+			findings.push({ id: element.name, nativeTag: tag, what: 'height', web: element.heightPx, native: counterpart.heightPx });
+		}
+
+		const spans = element.width >= SPANS_CONTAINER || counterpart.width >= SPANS_CONTAINER;
+		if (!spans && Math.abs(counterpart.widthPx - element.widthPx) > tolerancePx) {
+			findings.push({ id: element.name, nativeTag: tag, what: 'width', web: element.widthPx, native: counterpart.widthPx });
+		}
+
+		for (const axis of ['left', 'top'] as const) {
+			if (Math.abs(counterpart[axis] - element[axis]) > toleranceFraction) {
+				findings.push({ id: element.name, nativeTag: tag, what: axis, web: element[axis], native: counterpart[axis] });
+			}
+		}
+	}
+
+	return findings;
+}
