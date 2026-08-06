@@ -81,5 +81,6 @@
   "plugin:video/subtitle-overlay": 1,
   "plugin:video/touch-zones": 0,
   "plugin:video/tv-key-handler": 0,
-  "reachable-events": 161
+  "reachable-events": 161,
+  "chrome-controls": 19
 }

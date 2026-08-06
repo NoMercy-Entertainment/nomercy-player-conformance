@@ -3,6 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { compare, ParityResult } from './compare';
+import { compareChrome } from './chrome';
 import { nativeEmissions } from './emission';
 import { comparePlugins } from './plugins';
 
@@ -26,6 +27,9 @@ export function toBaseline(result: ParityResult): Baseline {
     // Counted as a negative that may only fall: a key nothing can reach is a
     // promise to a consumer that the library cannot keep.
     'reachable-events': nativeEmissions().reachable.length,
+    // Controls a viewer can reach on desktop. Not a method count — the two
+    // chromes have no shape in common — but the inventory both sides name.
+    'chrome-controls': compareChrome().web.length - compareChrome().missing.length,
   };
 }
 
