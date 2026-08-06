@@ -52,10 +52,10 @@ export function nativeEmissions(): EmissionResult {
   const reachable: string[] = [];
   const dead: string[] = [];
 
-  for (const [symbol, origin] of declaredIn) {
+  for (const origin of declaredIn.values()) {
     // Word-boundary match on the symbol, in every file but the declaring one.
     const used: boolean = [...texts].some(([file, text]) =>
-      file !== origin.file && new RegExp(`\\b${symbol}\\b`).test(text));
+      file !== origin.file && new RegExp(`\\b${origin.symbol}\\b`).test(text));
 
     if (used) reachable.push(origin.wire);
     else dead.push(origin.wire);
