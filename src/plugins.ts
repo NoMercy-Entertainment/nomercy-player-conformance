@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import { resolveMembers } from './native-surface';
 import { indexMembers } from './compare';
 import { NativeClass, parseAbiDump } from './native-surface';
-import { jvmDumps, NATIVE, REPO_ROOT } from './paths';
+import { jvmDumps, NATIVE, REPO_ROOT, WAIVERS } from './paths';
 
 // The player class was never the whole surface.
 //
@@ -45,6 +45,7 @@ export interface PluginResult {
   total: number;
   present: number;
   missing: string[];
+  waived: string[];
 }
 
 export function readPluginSurface(path: string = PLUGIN_SURFACE): PluginDeclaration[] {
@@ -109,6 +110,7 @@ export function comparePlugins(declarations: PluginDeclaration[] = readPluginSur
 
   const native = nativeClasses();
   const dumps = nativeDumps();
+  const waived: Record<string, string> = JSON.parse(readFileSync(WAIVERS, 'utf8'));
   const results: PluginResult[] = [];
 
   const candidatesFor = (name: string): NativeClass[] =>
@@ -133,6 +135,7 @@ export function comparePlugins(declarations: PluginDeclaration[] = readPluginSur
       && (entry.visibility ?? 'public') === 'public');
 
     const missing: string[] = [];
+    const waivedHere: string[] = [];
     let present = 0;
 
     for (const member of members) {
@@ -146,8 +149,20 @@ export function comparePlugins(declarations: PluginDeclaration[] = readPluginSur
       const has = candidatesFor(member.owner as string)
         .some(declared => indexMembers(resolveMembers(declared.name, dumps)).has(member.name));
 
+      const qualified = `${member.owner}.${member.name}`;
+
+      // A method whose parameters or return type are browser objects — an
+      // AudioNode, an HTMLCanvasElement, a MediaKeys, an EventTarget — cannot
+      // be ported, only imitated, and the ledger already carries that ruling
+      // for the player surface. Counting them as gaps made the denominator a
+      // measure of how much of a browser this port reproduces rather than how
+      // much of the player it implements.
+      //
+      // Waived, not hidden: every entry names its reason in waivers.json and
+      // the report prints the count, so the number can be argued with.
       if (has) present += 1;
-      else missing.push(`${member.owner}.${member.name}`);
+      else if (waived[qualified] !== undefined) waivedHere.push(qualified);
+      else missing.push(qualified);
     }
 
     results.push({
@@ -159,8 +174,9 @@ export function comparePlugins(declarations: PluginDeclaration[] = readPluginSur
       // chrome exists" into a number about the cue parsers.
       isPlugin: !plugin.endsWith('/src'),
       classes,
-      total: members.length,
+      total: members.length - waivedHere.length,
       present,
+      waived: waivedHere.sort(),
       missing: missing.sort(),
     });
   }
