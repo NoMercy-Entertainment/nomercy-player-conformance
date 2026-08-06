@@ -1,3 +1,4 @@
+import { existsSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -17,6 +18,27 @@ export interface NativeRepo {
   root: string;
   /** The JVM ABI dump. Desktop is the JVM target, so this is the desktop surface. */
   jvmApi: string;
+}
+
+/**
+ * Every JVM ABI dump a library publishes, the root module and its siblings.
+ *
+ * The chrome, the fakes and the ASS renderer are separate Gradle modules with
+ * their own dumps, and reading only the root one reported the entire Compose
+ * chrome as unported while 119 public declarations of it sat in
+ * `ui-compose/api/jvm`. A consumer takes the artifacts, not the root module.
+ */
+export function jvmDumps(repo: NativeRepo): string[] {
+  const dumps: string[] = [repo.jvmApi];
+
+  for (const entry of readdirSync(repo.root, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+
+    const candidate = resolve(repo.root, entry.name, 'api', 'jvm', `${entry.name}.api`);
+    if (existsSync(candidate)) dumps.push(candidate);
+  }
+
+  return dumps;
 }
 
 const NATIVE_ROOT: string = resolve(REPO_ROOT, 'packages-native');

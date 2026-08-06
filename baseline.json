@@ -77,7 +77,7 @@
   "plugin:video/key-handler": 0,
   "plugin:video/live-transcoding": 2,
   "plugin:video/media-session": 0,
-  "plugin:video/octopus": 0,
+  "plugin:video/octopus": 2,
   "plugin:video/subtitle-overlay": 1,
   "plugin:video/touch-zones": 0,
   "plugin:video/tv-key-handler": 0,

@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 
 import { indexMembers } from './compare';
 import { NativeClass, parseAbiDump } from './native-surface';
-import { NATIVE, REPO_ROOT } from './paths';
+import { jvmDumps, NATIVE, REPO_ROOT } from './paths';
 
 // The player class was never the whole surface.
 //
@@ -68,11 +68,13 @@ function nativeClasses(): Map<string, NativeClass> {
   const merged = new Map<string, NativeClass>();
 
   for (const repo of Object.values(NATIVE)) {
-    for (const [name, declared] of parseAbiDump(repo.jvmApi)) {
+    for (const dump of jvmDumps(repo)) {
+    for (const [name, declared] of parseAbiDump(dump)) {
       // Keyed by the simple name: the packages differ by design (a Kotlin
       // plugin lives under tv.nomercy.player.*) and the class name is what both
       // sides call the thing.
       merged.set(name.split('/').pop() ?? name, declared);
+    }
     }
   }
 
