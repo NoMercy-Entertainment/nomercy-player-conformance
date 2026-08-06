@@ -60,6 +60,18 @@ export const OVERLAY_COUNTERPARTS: Record<string, string | null> = {
 	'close-btn': 'nm-chrome-close',
 
 	// ── Scrubber ──
+	// The bottom stack: the scrubber row and the transport row together. The
+	// native chrome composes the same two, and the box around them is the
+	// element a layout comparison can address.
+	'bottom-bar': 'nm-desktop-chrome',
+
+	// The bubble a scrub drags along the bar, its frame, and the two lines of
+	// text under it. All four are drawn only while a scrub is in progress,
+	// which is why they arrived in the measurement late — the page had to be
+	// hovered before they existed to find.
+	'slider-pop-image': 'nm-scrub-frame',
+	'slider-text': 'nm-scrub-time',
+	'chapter-text': 'nm-scrub-chapter',
 	'top-row': null, // The row the scrubber sits in; the scrubber is the element.
 	'slider-bar': 'nm-scrubber',
 	'chapter-progress': 'nm-chapter-bar',
