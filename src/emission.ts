@@ -52,10 +52,15 @@ export function nativeEmissions(): EmissionResult {
   const reachable: string[] = [];
   const dead: string[] = [];
 
-  for (const origin of declaredIn.values()) {
+  for (const [symbol, origin] of declaredIn) {
     // Word-boundary match on the symbol, in every file but the declaring one.
+    //
+    // The symbol is the map's KEY. This read it off the VALUE, where there is
+    // no such field, so every search ran as /\bundefined\b/ and matched
+    // nothing — which reports every declared event as unreachable, in a report
+    // whose whole job is telling reachable from dead.
     const used: boolean = [...texts].some(([file, text]) =>
-      file !== origin.file && new RegExp(`\\b${origin.symbol}\\b`).test(text));
+      file !== origin.file && new RegExp(`\\b${symbol}\\b`).test(text));
 
     if (used) reachable.push(origin.wire);
     else dead.push(origin.wire);

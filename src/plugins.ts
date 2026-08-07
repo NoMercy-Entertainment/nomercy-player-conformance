@@ -46,6 +46,8 @@ export interface PluginResult {
   present: number;
   missing: string[];
   waived: string[];
+  /** Option fields the web plugin declares, and whether the port has each. */
+  options: { total: number; present: number; missing: string[] };
 }
 
 export function readPluginSurface(path: string = PLUGIN_SURFACE): PluginDeclaration[] {
@@ -165,6 +167,67 @@ export function comparePlugins(declarations: PluginDeclaration[] = readPluginSur
       else missing.push(qualified);
     }
 
+    // Options, matched by NAME across the plugin's whole native surface.
+    //
+    // Not by owner, the way methods are matched. The web declares its options as
+    // fields on an interface — `KeyHandlerOptions.scope` — and Kotlin puts the
+    // same choice on the plugin's constructor or on a data class with a
+    // different name, so an owner-keyed comparison would report every option on
+    // every plugin as missing. That is a flood of false gaps, which is the
+    // failure this whole tool has cost the most on.
+    //
+    // The check that DOES mean something is whether the choice can be made at
+    // all: an option nobody can set is a behaviour the port has decided for the
+    // consumer. `scope` was exactly that — the web defaults it to 'document' and
+    // the port had no such switch, so every shortcut died whenever anything else
+    // took focus, and a report comparing only method names could never see it.
+    const optionEntries = entries.filter(entry =>
+      entry.exported && entry.kind === 'option');
+
+    // Searched across the LIBRARY's whole public surface, not the classes this
+    // plugin's owners resolve to.
+    //
+    // An option is a question about whether a choice can be made at all, and
+    // the two sides put the same choice in different places: the web declares
+    // `DesktopUiButtonOptions.aspectRatio` on an interface, Kotlin puts it on a
+    // `ChromeButtons` data class in another module. Resolving by owner name
+    // found no `DesktopUiButtonOptions` and reported all thirty-five as
+    // missing, including the eight passed to ChromeButtons by this repo's own
+    // tests. Thirty-five false gaps on one plugin is the kind of number that
+    // gets working code rewritten.
+    //
+    // Looser than the method comparison on purpose. A method has an owner that
+    // means something; an option is a name a consumer sets. This errs toward
+    // silence rather than toward crying wolf, and the rule is stated in the
+    // report so the number can be argued with.
+    // A Kotlin property reaches the ABI as `getAspectRatio`; the field the web
+    // declares is `aspectRatio`. Compared raw the two never match and EVERY
+    // option on every plugin reads missing — which is what the first run
+    // reported, 14 of 123, with `aspectRatio` among the gaps while this repo's
+    // own tests were passing it to ChromeButtons.
+    const propertyName = (name: string): string => {
+      const stripped = name.replace(/^(get|set|is)(?=[A-Z])/, '');
+      return stripped.charAt(0).toLowerCase() + stripped.slice(1);
+    };
+
+    const nativeNames = new Set<string>(
+      dumps.flatMap(dump =>
+        [...dump.values()].flatMap(declared =>
+          declared.members.flatMap(member => [member.name, propertyName(member.name)]))),
+    );
+
+    const optionsMissing: string[] = [];
+    let optionsPresent = 0;
+
+    for (const option of optionEntries) {
+      const qualified = option.owner === undefined
+        ? option.name
+        : `${option.owner}.${option.name}`;
+
+      if (nativeNames.has(option.name) || waived[qualified] !== undefined) optionsPresent += 1;
+      else optionsMissing.push(qualified);
+    }
+
     results.push({
       plugin,
       // The extractor sweeps each package and files everything outside
@@ -178,6 +241,11 @@ export function comparePlugins(declarations: PluginDeclaration[] = readPluginSur
       present,
       waived: waivedHere.sort(),
       missing: missing.sort(),
+      options: {
+        total: optionEntries.length,
+        present: optionsPresent,
+        missing: optionsMissing.sort(),
+      },
     });
   }
 
