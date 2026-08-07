@@ -52,6 +52,11 @@ export interface OverlayMeasurement {
  */
 export const OVERLAY_COUNTERPARTS: Record<string, string | null> = {
 	// ── Top bar ──
+	// The big play button. The native side has carried nm-center-play since it
+	// was added; only this line was missing, so the one control a viewer looks
+	// for on a film that has not started was measured on neither side and the
+	// report said 22/23 without ever naming what the 23rd was.
+	'center-btn': 'nm-center-play',
 	'top-bar': 'nm-chrome-top-bar',
 	'top-bar-left': null, // A flex half of the top bar. The bar itself is the element.
 	'top-bar-right': null, // Ditto.
