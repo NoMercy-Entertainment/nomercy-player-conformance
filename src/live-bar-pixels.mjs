@@ -63,6 +63,20 @@ const webBox = [
 	bar.heightPx / basis.height,
 ];
 
+// The SAME bar, as a fraction of the PLAYER rather than of the page.
+//
+// One array cannot do both jobs. `webBox` is page-relative because it crops a
+// screenshot of the whole page, and applying those fractions to the player's
+// box put the app crop above the bar entirely — 0 inked columns, on masked
+// black. The app's box is the player, so the bar's place inside the player is
+// what maps onto it.
+const inPlayer = [
+	(bar.left - doc.container.left) / doc.container.width,
+	(bar.top - doc.container.top) / doc.container.height,
+	bar.widthPx / doc.container.width,
+	bar.heightPx / doc.container.height,
+];
+
 const script = `
 from PIL import Image
 import sys, json
@@ -115,10 +129,14 @@ pl, pt, pw, ph = (int(float(v)) for v in sys.argv[4:8])
 if pw <= 0 or ph <= 0:
     sys.exit('the player box came back empty — is the app running and reporting state?')
 
-left = pl + int(round(wl * pw))
-right = pl + int(round((wl + ww) * pw)) - 1
-top = pt + int(round(wt * ph))
-bottom = pt + int(round((wt + wh) * ph))
+# The bar's place inside the PLAYER, not inside the page. wl..wh are
+# page-relative and crop the web screenshot; these crop the app window.
+al, at, aw, ah = json.loads(sys.argv[8])
+
+left = pl + int(round(al * pw))
+right = pl + int(round((al + aw) * pw)) - 1
+top = pt + int(round(at * ph))
+bottom = pt + int(round((at + ah) * ph))
 
 rows = [y for y in range(int(h * 0.86), h) if lit(y) >= 40]
 if False:
@@ -181,7 +199,7 @@ print(json.dumps({
 
 const out = execFileSync(
 	'python',
-	['-c', script, webShot, JSON.stringify(webBox), appShot, ...playerBox],
+	['-c', script, webShot, JSON.stringify(webBox), appShot, ...playerBox, JSON.stringify(inPlayer)],
 	{ encoding: 'utf8' },
 );
 const result = JSON.parse(out.trim().split('\n').pop());
