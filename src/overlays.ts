@@ -79,7 +79,16 @@ export const OVERLAY_COUNTERPARTS: Record<string, string | null> = {
 	'slider-text': 'nm-scrub-time',
 	'chapter-text': 'nm-scrub-chapter',
 	'top-row': null, // The row the scrubber sits in; the scrubber is the element.
-	'slider-bar': 'nm-scrubber',
+	// Native draws ONE bar where the web stacks two boxes of the same eight
+	// pixels: `#slider-bar` is the track and `#chapter-progress` the chapter
+	// overlay inside it. That single drawn bar is nm-chapter-bar, paired below,
+	// and it matches the reference exactly.
+	//
+	// Not paired with nm-scrubber, which is the 32dp POINTER TARGET wrapped
+	// around the drawn bar and has no web counterpart — an eight-pixel drag
+	// target is one nobody hits with a finger. Pairing them compared a hit area
+	// against a drawn line and reported the difference as a layout defect.
+	'slider-bar': null,
 	'chapter-progress': 'nm-chapter-bar',
 	'slider-buffer': null, // Painted inside nm-scrubber rather than as its own node.
 	'slider-progress': null, // Ditto.
@@ -104,12 +113,16 @@ export const OVERLAY_COUNTERPARTS: Record<string, string | null> = {
 	'fullscreen': 'nm-chrome-fullscreen',
 
 	// ── Readouts and framing ──
-	'title': 'nm-chrome-episode',
+	// The two lines, each to its own. `#title` is the show and `.show-info` the
+	// episode under it; native tagged only the second, so a comparison pairing
+	// what was available put the first line against the second and called both
+	// misplaced.
+	'title': 'nm-chrome-title',
 	'current-time': null, // Drawn as text inside nm-transport-bar, not a tagged node.
 	'remaining-time': null, // Ditto.
 	'center': null, // The full-bleed hit area behind the chrome, not a drawn element.
 	'bottom-bar-shadow': null, // A gradient, not an element with behaviour.
-	'show-info': null, // A subtitle line inside the title block.
+	'show-info': 'nm-chrome-episode',
 
 	// ── Overlays ──
 	'spinner': 'nm-chrome-buffering',
