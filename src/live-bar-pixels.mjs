@@ -15,12 +15,37 @@
 //
 //   node live-bar-pixels.mjs <web.png> <web-overlays.json> <app-window.png>
 
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
 const [webShot, webGeom, appShot] = process.argv.slice(2);
 if (!webShot || !webGeom || !appShot) {
 	console.error('usage: live-bar-pixels.mjs <web.png> <web-overlays.json> <app-window.png>');
+	process.exit(2);
+}
+
+// Where the player sits in the window, from the player's own report.
+//
+// The app crop used to be FOUND by looking for ink, and that box came back
+// three different sizes for the same bar: 1113x69 over a bright scene, 1113x41
+// after a fixture change, 474x17 with the picture masked. A region that moves
+// with its own background is not a measurement, and five comparisons were built
+// on it — each disagreement explained by a different wrong theory before the
+// boxes were put side by side.
+//
+// The web side never had this problem: it reads #bottom-row's box from the DOM.
+// Now both sides use the same fractional box, applied to the region the
+// reference defines.
+const STATE_FILE = process.env.NOMERCY_TESTBED_STATE
+	?? 'C:/Projects/NoMercy/.testbed-commands.state';
+
+const stateLine = existsSync(STATE_FILE) ? readFileSync(STATE_FILE, 'utf8').trim() : '';
+const playerBox = stateLine.split(/\s+/).slice(3, 7);
+
+if (playerBox.length < 4 || playerBox.some(v => !Number.isFinite(Number(v)))) {
+	console.error(`no player box in ${STATE_FILE}`);
+	console.error('  The testbed must be running and reporting state. Its line is');
+	console.error('  `<id> <seconds> <playing> <left> <top> <width> <height>`.');
 	process.exit(2);
 }
 
@@ -83,9 +108,21 @@ def lit(y):
 # This works because the picture is MASKED for the measurement: on a flat field
 # every lit pixel is chrome, so the only question left is whether there are
 # enough of them to be a control rather than an edge.
+# READ, not detected. The four numbers are the player's own report of where it
+# sits in the window, and the fractional box is the one the web side reads from
+# the DOM — so both sides measure the region the reference defines.
+pl, pt, pw, ph = (int(float(v)) for v in sys.argv[4:8])
+if pw <= 0 or ph <= 0:
+    sys.exit('the player box came back empty — is the app running and reporting state?')
+
+left = pl + int(round(wl * pw))
+right = pl + int(round((wl + ww) * pw)) - 1
+top = pt + int(round(wt * ph))
+bottom = pt + int(round((wt + wh) * ph))
+
 rows = [y for y in range(int(h * 0.86), h) if lit(y) >= 40]
-if not rows:
-    sys.exit('no control row found in the app capture — is the chrome awake?')
+if False:
+    sys.exit('unreachable')
 
 # The lowest CLUSTER, allowing gaps.
 #
@@ -94,20 +131,25 @@ if not rows:
 # forty-pixel row, and comparing a sliver against the whole web bar reported a
 # difference five times the real one. Icons are not solid; a few blank rows
 # inside a row of them are still that row.
+# The lit rows are kept as a DIAGNOSTIC only.
+#
+# They used to define the crop. Everything below that grew a band about their
+# centre to the reference aspect is gone with them: the box is read now, so
+# there is nothing to grow and nothing for a threshold to get wrong.
 GAP = 6
 seen = sorted(rows)
-end = seen[-1]
-start = end
-for y in reversed(seen):
-    if start - y <= GAP:
-        start = y
-    else:
-        break
+if seen:
+    glyph_end = seen[-1]
+    glyph_start = glyph_end
+    for y in reversed(seen):
+        if glyph_start - y <= GAP:
+            glyph_start = y
+        else:
+            break
+else:
+    glyph_start, glyph_end = top, bottom
 
-# Left and right edges of that band, so a window with letterboxing either side
-# does not stretch the profile across dead pixels.
-xs = [x for x in range(w) for y in range(start, end + 1) if px[x, y]]
-left, right = min(xs), max(xs)
+start, end = glyph_start, glyph_end
 
 # The detected band is the GLYPHS; the reference box is the ROW around them.
 #
@@ -119,11 +161,8 @@ left, right = min(xs), max(xs)
 # In PIXELS. wl..wh are each normalised against their OWN axis, so dividing one
 # fraction by the other is not a shape — it is the ratio of two different
 # denominators, and it grew the band to 72 pixels where the reference row is 40.
-aspect = (wh * web.size[1]) / (ww * web.size[0])
-grown = int(round((right - left + 1) * aspect))
-middle = (start + end) // 2
-top = max(0, middle - grown // 2)
-bottom = min(h, top + grown)
+top = max(0, top)
+bottom = min(h, bottom)
 
 a = inked(web.crop((int(wl * web.size[0]), int(wt * web.size[1]),
                     int((wl + ww) * web.size[0]), int((wt + wh) * web.size[1]))))
