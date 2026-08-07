@@ -67,17 +67,23 @@ def inked(im, cols=64):
 w, h = app.size
 px = app.point(lambda v: 255 if v > 110 else 0).load()
 
-def spread(y, buckets=32):
-    hit = [0] * buckets
-    for x in range(w):
-        if px[x, y]:
-            hit[x * buckets // w] = 1
-    return sum(hit)
+def lit(y):
+    return sum(1 for x in range(w) if px[x, y])
 
-# Only where the chrome lives. Searching the bottom third let a subtitle line
-# sitting directly above the bar join the same cluster and returned a band of
-# 203 rows — the bar plus the cue plus the gap between them.
-rows = [y for y in range(int(h * 0.86), h) if spread(y) >= 20]
+# Rows holding a meaningful number of lit pixels.
+#
+# Counting pixels rather than how widely they are spread. The spread test was a
+# threshold that had to be retuned twice — twenty buckets of thirty-two found
+# only the rows crossing the timestamps and returned thirteen pixels of a fifty
+# pixel row; six returned twenty-five. The transport row is two clusters of
+# controls with a wide gap between them, so how far its ink spreads says more
+# about which part of a glyph a row cuts through than about whether it is the
+# bar.
+#
+# This works because the picture is MASKED for the measurement: on a flat field
+# every lit pixel is chrome, so the only question left is whether there are
+# enough of them to be a control rather than an edge.
+rows = [y for y in range(int(h * 0.86), h) if lit(y) >= 40]
 if not rows:
     sys.exit('no control row found in the app capture — is the chrome awake?')
 
@@ -103,13 +109,30 @@ for y in reversed(seen):
 xs = [x for x in range(w) for y in range(start, end + 1) if px[x, y]]
 left, right = min(xs), max(xs)
 
+# The detected band is the GLYPHS; the reference box is the ROW around them.
+#
+# Icons are 24 units tall inside a 40 unit row, so detection finds 25 pixels
+# where the browser's #bottom-row is 40 — and an ink profile is a fraction of
+# its own crop height, so the same controls read denser on the tighter crop.
+# The band is grown about its own centre to the reference's aspect ratio, which
+# is the row the reference is measuring.
+# In PIXELS. wl..wh are each normalised against their OWN axis, so dividing one
+# fraction by the other is not a shape — it is the ratio of two different
+# denominators, and it grew the band to 72 pixels where the reference row is 40.
+aspect = (wh * web.size[1]) / (ww * web.size[0])
+grown = int(round((right - left + 1) * aspect))
+middle = (start + end) // 2
+top = max(0, middle - grown // 2)
+bottom = min(h, top + grown)
+
 a = inked(web.crop((int(wl * web.size[0]), int(wt * web.size[1]),
                     int((wl + ww) * web.size[0]), int((wt + wh) * web.size[1]))))
-b = inked(app.crop((left, start, right + 1, end + 1)))
+b = inked(app.crop((left, top, right + 1, bottom)))
 diff = sum(abs(x - y) for x, y in zip(a, b)) / len(a)
 
 print(json.dumps({
-    'foundBar': {'left': left, 'top': start, 'width': right - left + 1, 'height': end - start + 1},
+    'foundBar': {'left': left, 'top': top, 'width': right - left + 1, 'height': bottom - top},
+    'glyphBand': {'top': start, 'height': end - start + 1},
     'columns': len(a),
     'inkedWeb': sum(1 for v in a if v > 0),
     'inkedApp': sum(1 for v in b if v > 0),
