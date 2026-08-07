@@ -277,17 +277,25 @@ export function compareGeometry(
 		const nativeFromBottom = (1 - counterpart.top) * native.container.height;
 		const bottomAnchored = element.top > BOTTOM_HALF && counterpart.top > BOTTOM_HALF;
 
-		const topMismatch = bottomAnchored
-			? Math.abs(nativeFromBottom - webFromBottom) > tolerancePx
-			: Math.abs(counterpart.top - element.top) > toleranceFraction;
+		// Both directions, in PIXELS. Splitting this by anchor and leaving the
+		// top-anchored half as a fraction fixed sixteen findings and left one
+		// standing for exactly the same reason: `show-info` reported 0.0964
+		// against 0.0639, and 0.0964 x 477 is 46.0 while 0.0639 x 720 is 46.0.
+		// The episode line sits 46px below the top in both players.
+		//
+		// Vertical position is absolute in a video chrome. A control is pinned
+		// to an edge and offset from it by a fixed amount, so the fraction is an
+		// artefact of the container it was measured in and nothing else.
+		const webTop = bottomAnchored ? webFromBottom : element.top * web.container.height;
+		const nativeTop = bottomAnchored ? nativeFromBottom : counterpart.top * native.container.height;
 
-		if (topMismatch) {
+		if (Math.abs(nativeTop - webTop) > tolerancePx) {
 			findings.push({
 				id: element.name,
 				nativeTag: tag,
 				what: 'top',
-				web: bottomAnchored ? Math.round(webFromBottom) : element.top,
-				native: bottomAnchored ? Math.round(nativeFromBottom) : counterpart.top,
+				web: Math.round(webTop),
+				native: Math.round(nativeTop),
 			});
 		}
 
