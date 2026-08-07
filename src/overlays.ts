@@ -217,6 +217,10 @@ const SPANS_CONTAINER = 0.9;
 // draws comes near it.
 const BOTTOM_HALF = 0.6;
 
+// Elements whose width is the length of a sentence. Everything else in the
+// chrome is a button or a bar with a size the layout chose.
+const TEXT_WIDTH_IS_CONTENT: ReadonlySet<string> = new Set(['title', 'show-info']);
+
 export function compareGeometry(
 	web: OverlayMeasurement,
 	native: OverlayMeasurement,
@@ -255,8 +259,19 @@ export function compareGeometry(
 			findings.push({ id: element.name, nativeTag: tag, what: 'height', web: element.heightPx, native: counterpart.heightPx });
 		}
 
+		// A text box is as wide as its STRING, so its width is a question about
+		// what the two fixtures were showing rather than about where anything is
+		// drawn. The web capture was Rail Wars in a browser and the native dump
+		// used ChromeTestEpisode(); `title` came back 51 against 74 and
+		// `show-info` 109 against 143, which measures two different sentences.
+		//
+		// The same exemption container-spanning elements already have, and for
+		// the same stated reason. HEIGHT is still compared on these, and height
+		// is the font-metric question - a title set two points too large fails
+		// on height and would not hide here.
 		const spans = element.width >= SPANS_CONTAINER || counterpart.width >= SPANS_CONTAINER;
-		if (!spans && Math.abs(counterpart.widthPx - element.widthPx) > tolerancePx) {
+		const textSized = TEXT_WIDTH_IS_CONTENT.has(element.name);
+		if (!spans && !textSized && Math.abs(counterpart.widthPx - element.widthPx) > tolerancePx) {
 			findings.push({ id: element.name, nativeTag: tag, what: 'width', web: element.widthPx, native: counterpart.widthPx });
 		}
 
