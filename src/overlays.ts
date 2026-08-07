@@ -63,7 +63,13 @@ export const OVERLAY_COUNTERPARTS: Record<string, string | null> = {
 	// The bottom stack: the scrubber row and the transport row together. The
 	// native chrome composes the same two, and the box around them is the
 	// element a layout comparison can address.
-	'bottom-bar': 'nm-desktop-chrome',
+	//
+	// It pointed at nm-desktop-chrome until a geometry diff ran over it. That
+	// tag is the full-bleed chrome ROOT, so an eighty-pixel strip was being
+	// compared against the whole screen and came back off by 0.889 in both top
+	// and height — the size of the screen, not of a defect. The stack now
+	// carries its own tag.
+	'bottom-bar': 'nm-bottom-stack',
 
 	// The bubble a scrub drags along the bar, its frame, and the two lines of
 	// text under it. All four are drawn only while a scrub is in progress,
