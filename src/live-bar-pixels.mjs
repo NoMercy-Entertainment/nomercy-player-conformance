@@ -179,7 +179,11 @@ print(json.dumps({
 }))
 `;
 
-const out = execFileSync('python', ['-c', script, webShot, JSON.stringify(webBox), appShot], { encoding: 'utf8' });
+const out = execFileSync(
+	'python',
+	['-c', script, webShot, JSON.stringify(webBox), appShot, ...playerBox],
+	{ encoding: 'utf8' },
+);
 const result = JSON.parse(out.trim().split('\n').pop());
 
 const box = result.foundBar;
