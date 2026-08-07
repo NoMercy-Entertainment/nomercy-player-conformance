@@ -118,6 +118,7 @@ const result = JSON.parse(out.trim().split('\n').pop());
 
 console.log(`transport bar ink profile over ${result.columns} columns`);
 console.log(`inked columns: web ${result.inkedWeb}, native ${result.inkedNative}`);
+refuseIfDifferentControls(result.inkedWeb, result.inkedNative, 'web', 'native');
 console.log(`mean difference ${result.meanInkDifference}`);
 for (const c of result.worstColumns) {
 	console.log(`  column ${c.column}: web ${c.web} native ${c.native}`);
@@ -146,3 +147,35 @@ console.log(passed
 // consumed the number, which is the same shape as the geometry export that had
 // no reader.
 process.exit(passed ? 0 : 1);
+
+// The two bars have to be drawing the SAME CONTROLS before their ink means
+// anything.
+//
+// This tool sums ink across the bar, so a bar with two extra glyphs has more
+// inked columns however correctly each one is placed. Rail Wars reported
+// `web 36, app 63` and a 0.48 difference twice - once with the web player
+// stopped and once with it confirmed playing at 5.90s, readyState 4, which is
+// what proved the playback state was never the cause. The app drew seek-back
+// and seek-forward that the web page did not, and the web drew a quality button
+// the app did not.
+//
+// The geometry report already carries this guard and states the reason beside
+// it: one absent control shifts every control after it, and that is a
+// difference between fixtures rather than between layouts. This sibling summed
+// pixels for months without it.
+function refuseIfDifferentControls(a, b, labelA, labelB) {
+	// Inside the function, not beside it: the call site runs before a top-level
+	// const at the bottom of the file is initialised, so the guard threw a
+	// temporal-dead-zone error instead of guarding anything.
+	const COMPARABLE_INK_RATIO = 0.15;
+
+	const larger = Math.max(a, b);
+	const smaller = Math.min(a, b);
+	if (larger === 0) return;
+	if ((larger - smaller) / larger <= COMPARABLE_INK_RATIO) return;
+
+	console.log(`NOT COMPARABLE: ${labelA} ${a} vs ${labelB} ${b} inked columns`);
+	console.log('  The two bars are not drawing the same controls, so their ink cannot be compared.');
+	console.log('  Match the control sets - or the fixtures - and run it again.');
+	process.exit(3);
+}
