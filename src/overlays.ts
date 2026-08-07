@@ -207,6 +207,11 @@ export interface GeometryFinding {
 
 const SPANS_CONTAINER = 0.9;
 
+// Below this, a control is laid out from the bottom edge and has to be measured
+// from it. The chrome's whole lower stack lives past 0.8; nothing the top bar
+// draws comes near it.
+const BOTTOM_HALF = 0.6;
+
 export function compareGeometry(
 	web: OverlayMeasurement,
 	native: OverlayMeasurement,
@@ -250,8 +255,35 @@ export function compareGeometry(
 			findings.push({ id: element.name, nativeTag: tag, what: 'width', web: element.widthPx, native: counterpart.widthPx });
 		}
 
-		if (Math.abs(counterpart.top - element.top) > toleranceFraction) {
-			findings.push({ id: element.name, nativeTag: tag, what: 'top', web: element.top, native: counterpart.top });
+		// A bottom-anchored control is measured from the BOTTOM, in pixels.
+		//
+		// Same argument as the horizontal axis two blocks down, which already
+		// measures along the bar rather than across the container. `top` as a
+		// fraction of HEIGHT cannot agree across containers of different heights
+		// however correct the layout is: the bar sits 48px above the bottom in
+		// both players, and at 649x477 that normalises to 0.899 while at
+		// 1024x720 it normalises to 0.933.
+		//
+		// That reported sixteen findings in one run — the transport bar and every
+		// one of its thirteen buttons, the chapter bar and the bottom stack —
+		// all off by the same amount, which is the signature of a fixture rather
+		// than a defect. Real drift is ragged; a uniform offset is a ruler.
+		const webFromBottom = (1 - element.top) * web.container.height;
+		const nativeFromBottom = (1 - counterpart.top) * native.container.height;
+		const bottomAnchored = element.top > BOTTOM_HALF && counterpart.top > BOTTOM_HALF;
+
+		const topMismatch = bottomAnchored
+			? Math.abs(nativeFromBottom - webFromBottom) > tolerancePx
+			: Math.abs(counterpart.top - element.top) > toleranceFraction;
+
+		if (topMismatch) {
+			findings.push({
+				id: element.name,
+				nativeTag: tag,
+				what: 'top',
+				web: bottomAnchored ? Math.round(webFromBottom) : element.top,
+				native: bottomAnchored ? Math.round(nativeFromBottom) : counterpart.top,
+			});
 		}
 
 		// Only when both sides drew the same controls.
