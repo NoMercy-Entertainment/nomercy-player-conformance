@@ -174,9 +174,17 @@ export function compare(contract: Contract = readContract(), waivers: Waivers = 
   const extra: ParityResult['extra'] = [];
   const excused = excusedNatively();
 
+  // Only bare player-method names are checked here. A qualified `Plugin.method`
+  // key is a comparePlugins() waiver — a different ledger, scoped to a plugin's
+  // own class, not the Kotlin WEB_ONLY_METHODS sets excusedNatively() reads.
+  // Checking those against excusedNatively() found every one of them "a reason
+  // here that no library excuses", which was the tool comparing two ledgers
+  // that were never meant to agree, not a real cross-platform inconsistency.
+  const playerLevelWaivers = Object.keys(waivers).filter(name => !name.includes('.'));
+
   const ledgerDisagreements = [
     ...[...excused].filter(name => !waivers[name]).map(name => `${name}: excused by the libraries with no reason written here`),
-    ...Object.keys(waivers).filter(name => !excused.has(name)).map(name => `${name}: a reason here that no library excuses`),
+    ...playerLevelWaivers.filter(name => !excused.has(name)).map(name => `${name}: a reason here that no library excuses`),
   ].sort();
 
   for (const player of ['video', 'music'] as const) {
