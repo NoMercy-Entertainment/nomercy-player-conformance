@@ -67,6 +67,9 @@ const ALIASES: Record<string, string[]> = {
   KeyHandlerPlugin: ['KeyHandlerPlugin', 'VideoKeyHandlerPlugin', 'MusicKeyHandlerPlugin'],
   TvKeyHandlerPlugin: ['TvKeyHandlerPlugin'],
   MediaSessionPlugin: ['MediaSessionPlugin', 'VideoMediaSessionPlugin', 'MusicMediaSessionPlugin'],
+  // The Compose chrome plugin carries the name of what it composes, not the
+  // web's DOM-flavoured "desktop UI" — VideoUiPlugin in ui-compose/api/jvm.
+  DesktopUiPlugin: ['VideoUiPlugin'],
 };
 
 // Every dump, kept whole, so a supertype can be looked up by the name its
