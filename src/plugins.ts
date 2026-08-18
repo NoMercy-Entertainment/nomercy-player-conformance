@@ -72,6 +72,23 @@ const ALIASES: Record<string, string[]> = {
   DesktopUiPlugin: ['VideoUiPlugin'],
 };
 
+// Option names the two sides genuinely call different things, checked
+// alongside an exact match. The web keeps `wsUrl` as a back-compat alias for
+// its own `controlUrl` rename; native has no such history and took the one
+// name outright, so a name-only comparison always read it as missing what it
+// actually has under its real name.
+const OPTION_ALIASES: Record<string, string> = {
+  wsUrl: 'controlUrl',
+  // The web calls its pre-dispatch gate `when`; native could not, because
+  // `when` is a Kotlin keyword. `whenAllowed` is the same predicate under the
+  // name the collision forced.
+  when: 'whenAllowed',
+  // Same value, same unit (ms) — TouchZoneOptions.doubleTapWindowMs is the
+  // window a second tap still counts as a double, which is what the web calls
+  // the threshold.
+  doubleTapThreshold: 'doubleTapWindowMs',
+};
+
 // Every dump, kept whole, so a supertype can be looked up by the name its
 // subclass records. Keyed by FULL name here; nativeClasses() below is the
 // simple-name index the web side matches against.
@@ -227,7 +244,8 @@ export function comparePlugins(declarations: PluginDeclaration[] = readPluginSur
         ? option.name
         : `${option.owner}.${option.name}`;
 
-      if (nativeNames.has(option.name) || waived[qualified] !== undefined) optionsPresent += 1;
+      const aliased = OPTION_ALIASES[option.name];
+      if (nativeNames.has(option.name) || (aliased !== undefined && nativeNames.has(aliased)) || waived[qualified] !== undefined) optionsPresent += 1;
       else optionsMissing.push(qualified);
     }
 

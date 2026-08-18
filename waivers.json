@@ -1,4 +1,6 @@
 {
+	"AudioGraphOptions.latencyHint": "Passed to `new AudioContext({ latencyHint })`, a browser buffer-size preference with no native audio-session equivalent that means the same thing on every platform.",
+	"AudioGraphOptions.smoothing": "Sets an AnalyserNode's smoothingTimeConstant. Native has no single shared analyser AudioGraphPlugin owns — SpectrumPlugin and PcmEqualiser each keep their own SpectrumHistory, the same architecture split AudioGraphPlugin.context already carries.",
 	"AudioGraphPlugin.analyserSource": "Returns an AnalyserNode. The native equivalent is the frame tap, which pushes frames rather than handing out a node to read.",
 	"AudioGraphPlugin.context": "The Web Audio AudioContext itself. Native processing goes through the AudioDspGraph port, which is a different object with a different lifetime.",
 	"AudioGraphPlugin.insertEffect": "Takes and returns AudioNode. Inserting arbitrary nodes into a chain is a Web Audio capability with no native counterpart.",
@@ -17,6 +19,9 @@
 	"KeyHandlerPlugin.scope": "Returns the EventTarget the keydown listener attaches to. Natively the platform delivers key events; nothing is attached to a node.",
 	"MessageOptions.mountSelector": "A CSS selector naming the DOM node to mount into. Compose has no selector and no document; the counterpart is the slot the host passes.",
 	"OctopusOptions.legacyWorkerUrl": "The URL of a JavaScript worker for browsers without WebAssembly threads. The port links libass directly.",
+	"ScrobbleOptions.scrobbler": "Injected through ScrobblePlugin's own constructor (`private val scrobbler: Scrobbler = NoopScrobbler`) rather than an options data class field, the same swap point the web's opts.scrobbler is — a private constructor parameter carries no public ABI signature for this tool to find under any name.",
+	"OctopusOptions.renderMode": "Chooses between a `js` and a `wasm` libass backend in the browser. The port links one native libass binding; there is no second backend to choose between.",
+	"OctopusOptions.workerUrl": "The URL of the JS Worker script the browser's renderer runs in. The port calls libass directly, off no worker.",
 	"OctopusPlugin.initialize": "The web Plugin base's lifecycle hook, overridden to merge options before the kit's own call. The native base spells this use() and every plugin already has it.",
 	"SpectrumPlugin.analyser": "Returns an AnalyserNode. Native frames arrive through the graph's tap.",
 	"addClasses": "DOM class manipulation on the mount element. Compose has no class list; the native chrome styles itself with modifiers.",
