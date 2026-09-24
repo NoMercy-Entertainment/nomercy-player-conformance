@@ -18,6 +18,7 @@ import { NATIVE, REPO_ROOT } from './paths';
 const WEB_CHROME: string = resolve(
   REPO_ROOT,
   'packages',
+  'player-web',
   'nomercy-video-player',
   'src',
   'plugins',

@@ -4,7 +4,7 @@ Grades the native player trio against the web trio, method by method and group
 by group, so "how far along is the port" is a number somebody can check rather
 than a feeling.
 
-The web side is the generated contract at `tools/player-contract` — every method
+The web side is the generated contract at `testing/nomercy-player-conformance` — every method
 each player exposes, tagged with the mixin that declares it and whether it is a
 verb, a stateful noun, or plain data. The native side is each KMP library's
 checked-in JVM binary-compatibility dump, which is the surface a desktop

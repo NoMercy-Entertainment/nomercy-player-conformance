@@ -4,11 +4,11 @@ import { fileURLToPath } from 'node:url';
 
 const here: string = dirname(fileURLToPath(import.meta.url));
 
-// tools/player-parity/src -> repo root is three levels up.
+// testing/player-parity/src -> repo root is three levels up.
 export const REPO_ROOT: string = resolve(here, '..', '..', '..');
 
 /** The web oracle: the generated contract every native port is graded against. */
-export const CONTRACT: string = resolve(REPO_ROOT, 'tools', 'player-contract', 'contract', 'contract.json');
+export const CONTRACT: string = resolve(REPO_ROOT, 'testing', 'nomercy-player-conformance', 'contract', 'contract.json');
 
 /** Reasoned exemptions: what the web declares because it is the web. */
 export const WAIVERS: string = resolve(here, '..', 'waivers.json');
@@ -41,7 +41,7 @@ export function jvmDumps(repo: NativeRepo): string[] {
   return dumps;
 }
 
-const NATIVE_ROOT: string = resolve(REPO_ROOT, 'packages-native');
+const NATIVE_ROOT: string = resolve(REPO_ROOT, 'packages', 'player-kmp');
 
 export const NATIVE: Record<'core' | 'video' | 'music', NativeRepo> = {
   core: {

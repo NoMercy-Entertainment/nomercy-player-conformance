@@ -19,8 +19,8 @@ import { jvmDumps, NATIVE, REPO_ROOT, WAIVERS } from './paths';
 
 const PLUGIN_SURFACE: string = resolve(
   REPO_ROOT,
-  'tools',
-  'player-contract',
+  'testing',
+  'nomercy-player-conformance',
   'contract',
   'plugin-surface.json',
 );
