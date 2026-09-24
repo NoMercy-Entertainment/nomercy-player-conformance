@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          path: tools/player-scenarios
+          path: testing/nomercy-player-scenarios
 
       # The harness drives the real trio, so the trio has to be here. These are
       # the three packages under test, all public — checking them out is the
@@ -25,15 +25,15 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: NoMercy-Entertainment/nomercy-player-core
-          path: packages/nomercy-player-core
+          path: packages/player-web/nomercy-player-core
       - uses: actions/checkout@v6
         with:
           repository: NoMercy-Entertainment/nomercy-video-player
-          path: packages/nomercy-video-player
+          path: packages/player-web/nomercy-video-player
       - uses: actions/checkout@v6
         with:
           repository: NoMercy-Entertainment/nomercy-music-player
-          path: packages/nomercy-music-player
+          path: packages/player-web/nomercy-music-player
 
       - uses: actions/setup-node@v6
         with:
@@ -47,19 +47,19 @@ jobs:
           done
 
       - name: Install
-        working-directory: tools/player-scenarios
+        working-directory: testing/nomercy-player-scenarios
         run: npm install
 
       - name: Typecheck
-        working-directory: tools/player-scenarios
+        working-directory: testing/nomercy-player-scenarios
         run: npx tsc --noEmit
 
       - name: Lint
-        working-directory: tools/player-scenarios
+        working-directory: testing/nomercy-player-scenarios
         run: npm run lint
 
       # Runs the whole scenario set against both real players, plus the planted
       # drift proof that shows a failure is actually reported.
       - name: Scenarios
-        working-directory: tools/player-scenarios
+        working-directory: testing/nomercy-player-scenarios
         run: npm test

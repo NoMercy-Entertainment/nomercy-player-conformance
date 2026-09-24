@@ -16,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, '..', '..', '..');
-const generated = resolve(repoRoot, 'tools', 'player-contract', 'contract', 'contract.json');
+const generated = resolve(repoRoot, 'testing', 'nomercy-player-conformance', 'contract', 'contract.json');
 const vendored = resolve(here, '..', 'contract', 'contract.json');
 
 if (!existsSync(generated)) {

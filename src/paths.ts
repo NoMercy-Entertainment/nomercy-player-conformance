@@ -17,8 +17,8 @@ export const REPO_ROOT: string = resolve(here, '..', '..', '..');
 /** The generator's own output, present only inside the monorepo checkout. */
 export const MONOREPO_CONTRACT_PATH: string = resolve(
   REPO_ROOT,
-  'tools',
-  'player-contract',
+  'testing',
+  'nomercy-player-conformance',
   'contract',
   'contract.json',
 );
