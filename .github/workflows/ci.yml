@@ -42,8 +42,8 @@ jobs:
       - name: Build the trio the harness drives
         run: |
           for package in nomercy-player-core nomercy-video-player nomercy-music-player; do
-            npm ci --prefix "packages/$package" || npm install --prefix "packages/$package"
-            npm run build --prefix "packages/$package"
+            npm ci --prefix "packages/player-web/$package" || npm install --prefix "packages/player-web/$package"
+            npm run build --prefix "packages/player-web/$package"
           done
 
       - name: Install
