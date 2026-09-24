@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          path: tools/player-contract
+          path: testing/nomercy-player-conformance
 
       # The generator reads the trio's TypeScript. Without the packages it has
       # nothing to extract from, which is what turned this workflow red: every
@@ -23,17 +23,17 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: NoMercy-Entertainment/nomercy-player-core
-          path: packages/nomercy-player-core
+          path: packages/player-web/nomercy-player-core
           fetch-depth: 0
       - uses: actions/checkout@v6
         with:
           repository: NoMercy-Entertainment/nomercy-video-player
-          path: packages/nomercy-video-player
+          path: packages/player-web/nomercy-video-player
           fetch-depth: 0
       - uses: actions/checkout@v6
         with:
           repository: NoMercy-Entertainment/nomercy-music-player
-          path: packages/nomercy-music-player
+          path: packages/player-web/nomercy-music-player
           fetch-depth: 0
 
       # The Swift facade extractor reads the shipped facades out of the native
@@ -42,12 +42,12 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: NoMercy-Entertainment/nomercy-video-player-kmp
-          path: packages-native/nomercy-video-player-kmp
+          path: packages/player-kmp/nomercy-video-player-kmp
           fetch-depth: 0
       - uses: actions/checkout@v6
         with:
           repository: NoMercy-Entertainment/nomercy-music-player-kmp
-          path: packages-native/nomercy-music-player-kmp
+          path: packages/player-kmp/nomercy-music-player-kmp
           fetch-depth: 0
 
       - uses: actions/setup-node@v6
@@ -55,18 +55,18 @@ jobs:
           node-version: 22
 
       - name: Install
-        working-directory: tools/player-contract
+        working-directory: testing/nomercy-player-conformance
         run: npm ci
 
       - name: Test
-        working-directory: tools/player-contract
+        working-directory: testing/nomercy-player-conformance
         run: npm test
 
       # Drift is the daily gate: the committed contract must still match what the
       # generator produces. It also prints whether the surface is released, which
       # needs the tags it compares against — hence fetch-depth: 0 above.
       - name: Drift
-        working-directory: tools/player-contract
+        working-directory: testing/nomercy-player-conformance
         run: npm run check
 
       # Released-ness is a publish gate, not a push gate. It is true on every
@@ -75,5 +75,5 @@ jobs:
       # something is being released, and the contract has to describe it.
       - name: Released surface
         if: startsWith(github.ref, 'refs/tags/')
-        working-directory: tools/player-contract
+        working-directory: testing/nomercy-player-conformance
         run: npm run check:release

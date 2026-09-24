@@ -21,11 +21,11 @@ export interface SwiftFacade {
 const FACADE_FILES: { library: 'video' | 'music'; path: string }[] = [
   {
     library: 'video',
-    path: 'packages-native/nomercy-video-player-kmp/apple/NoMercyPlayer/Sources/NoMercyPlayer/video/VideoChromePlayer.swift',
+    path: 'packages/player-kmp/nomercy-video-player-kmp/apple/NoMercyPlayer/Sources/NoMercyPlayer/video/VideoChromePlayer.swift',
   },
   {
     library: 'music',
-    path: 'packages-native/nomercy-music-player-kmp/apple/NoMercyMusicPlayer/Sources/NoMercyMusicPlayer/MusicChromePlayer.swift',
+    path: 'packages/player-kmp/nomercy-music-player-kmp/apple/NoMercyMusicPlayer/Sources/NoMercyMusicPlayer/MusicChromePlayer.swift',
   },
 ];
 

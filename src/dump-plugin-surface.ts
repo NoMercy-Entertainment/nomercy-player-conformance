@@ -4,7 +4,7 @@ import { dirname, resolve } from 'node:path';
 import { extractPluginSurface, SurfaceEntry } from './extract-plugin-surface';
 import { REPO_ROOT } from './paths';
 
-const OUT: string = resolve(REPO_ROOT, 'tools', 'player-contract', 'contract', 'plugin-surface.json');
+const OUT: string = resolve(REPO_ROOT, 'testing', 'nomercy-player-conformance', 'contract', 'plugin-surface.json');
 
 function byKey(a: SurfaceEntry, b: SurfaceEntry): number {
   const ka: string = `${a.plugin}/${a.file}/${a.kind}/${a.name}`;
