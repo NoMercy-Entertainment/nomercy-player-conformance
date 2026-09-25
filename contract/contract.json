@@ -1,8 +1,8 @@
 {
-  "version": "2.2.1",
+  "version": "2.2.3",
   "provenance": {
-    "version": "2.2.1",
-    "commit": "a56df97",
+    "version": "2.2.3",
+    "commit": "54e171e",
     "commitsAheadOfTag": 0,
     "dirty": false
   },
@@ -3353,6 +3353,17 @@
       ]
     },
     {
+      "name": "resolveCustomStream",
+      "signature": "(url: string, contentType?: string) => IStreamSource | undefined",
+      "player": "video",
+      "group": "core/stream-registration",
+      "kind": "method",
+      "arities": [
+        1,
+        2
+      ]
+    },
+    {
       "name": "resolveUrl",
       "signature": "(url: string, category?: UrlCategory) => Promise<ResolvedUrl>",
       "player": "video",
@@ -3855,6 +3866,7 @@
     "core:state/vite-plugin-not-configured",
     "core:stream/fragment-failed",
     "core:stream/hls-attach-failed",
+    "core:stream/media-absent",
     "core:stream/no-factory-match",
     "core:test/getplugin-returned-undefined",
     "core:test/listener-leak",
