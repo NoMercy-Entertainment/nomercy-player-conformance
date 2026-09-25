@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import { resolveMembers } from './native-surface';
 import { indexMembers } from './compare';
 import { NativeClass, parseAbiDump } from './native-surface';
-import { jvmDumps, NATIVE, REPO_ROOT, WAIVERS } from './paths';
+import { CONFORMANCE_ROOT, jvmDumps, NATIVE, WAIVERS } from './paths';
 
 // The player class was never the whole surface.
 //
@@ -17,13 +17,7 @@ import { jvmDumps, NATIVE, REPO_ROOT, WAIVERS } from './paths';
 // same way the player's are graded: by class, member by member, against the
 // published ABI.
 
-const PLUGIN_SURFACE: string = resolve(
-  REPO_ROOT,
-  'testing',
-  'nomercy-player-conformance',
-  'contract',
-  'plugin-surface.json',
-);
+const PLUGIN_SURFACE: string = resolve(CONFORMANCE_ROOT, 'contract', 'plugin-surface.json');
 
 export interface PluginDeclaration {
   plugin: string;

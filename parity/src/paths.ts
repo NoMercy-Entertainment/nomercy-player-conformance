@@ -4,11 +4,13 @@ import { fileURLToPath } from 'node:url';
 
 const here: string = dirname(fileURLToPath(import.meta.url));
 
-// testing/player-parity/src -> repo root is three levels up.
-export const REPO_ROOT: string = resolve(here, '..', '..', '..');
+// testing/nomercy-player-conformance/parity/src -> the conformance repo is two
+// levels up, the workspace root four.
+export const CONFORMANCE_ROOT: string = resolve(here, '..', '..');
+export const REPO_ROOT: string = resolve(here, '..', '..', '..', '..');
 
 /** The web oracle: the generated contract every native port is graded against. */
-export const CONTRACT: string = resolve(REPO_ROOT, 'testing', 'nomercy-player-conformance', 'contract', 'contract.json');
+export const CONTRACT: string = resolve(CONFORMANCE_ROOT, 'contract', 'contract.json');
 
 /** Reasoned exemptions: what the web declares because it is the web. */
 export const WAIVERS: string = resolve(here, '..', 'waivers.json');
