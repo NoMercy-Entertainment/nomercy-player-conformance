@@ -77,3 +77,82 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         working-directory: testing/nomercy-player-conformance
         run: npm run check:release
+
+  # The parity grader reads the contract above and the KMP trio's ABI dumps.
+  # Its unit tests use fixtures, so the repo alone is enough here.
+  parity:
+    runs-on: [self-hosted, Linux, X64, beast-unit]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          path: testing/nomercy-player-conformance
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Install
+        working-directory: testing/nomercy-player-conformance/parity
+        run: npm ci
+
+      - name: Typecheck
+        working-directory: testing/nomercy-player-conformance/parity
+        run: npx tsc --noEmit
+
+      - name: Test
+        working-directory: testing/nomercy-player-conformance/parity
+        run: npm test
+
+  # The scenario harness drives the real trio, so the trio has to be here and
+  # built. The relative paths mirror the monorepo, which is what the file: deps
+  # in scenarios/package.json expect. It reads the contract from ../contract.
+  scenarios:
+    runs-on: [self-hosted, Linux, X64, beast-unit]
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          path: testing/nomercy-player-conformance
+
+      - uses: actions/checkout@v6
+        with:
+          repository: NoMercy-Entertainment/nomercy-player-core
+          path: packages/player-web/nomercy-player-core
+      - uses: actions/checkout@v6
+        with:
+          repository: NoMercy-Entertainment/nomercy-video-player
+          path: packages/player-web/nomercy-video-player
+      - uses: actions/checkout@v6
+        with:
+          repository: NoMercy-Entertainment/nomercy-music-player
+          path: packages/player-web/nomercy-music-player
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Build the trio the harness drives
+        run: |
+          for package in nomercy-player-core nomercy-video-player nomercy-music-player; do
+            npm ci --prefix "packages/player-web/$package" || npm install --prefix "packages/player-web/$package"
+            npm run build --prefix "packages/player-web/$package"
+          done
+
+      - name: Install
+        working-directory: testing/nomercy-player-conformance/scenarios
+        run: npm install
+
+      - name: Typecheck
+        working-directory: testing/nomercy-player-conformance/scenarios
+        run: npx tsc --noEmit
+
+      - name: Lint
+        working-directory: testing/nomercy-player-conformance/scenarios
+        run: npm run lint
+
+      # Runs the whole scenario set against both real players, plus the planted
+      # drift proof that shows a failure is actually reported.
+      - name: Scenarios
+        working-directory: testing/nomercy-player-conformance/scenarios
+        run: npm test
