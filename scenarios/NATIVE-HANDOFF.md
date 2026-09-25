@@ -13,9 +13,8 @@ passed while measuring nothing.
 ## The two files a native runner reads
 
 `scenarios/scenarios.json` holds the scenarios and the contract version they
-were written against. `contract/contract.json` is a copy of the generator's
-output, vendored so this repo runs standalone; `npm run sync:contract` refreshes
-it and a test fails if the copy drifts from the generator inside the monorepo.
+were written against. `../contract/contract.json` is the generator's output,
+in the same repository, so there is no second copy to drift.
 
 A native runner should vendor the same contract file rather than parse
 TypeScript. The Kotlin side already carries `CONTRACT_VERSION` as a generated

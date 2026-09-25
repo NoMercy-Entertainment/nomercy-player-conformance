@@ -8,13 +8,12 @@
     "test": "vitest run",
     "check": "vitest run",
     "lint": "eslint . --max-warnings 0",
-    "lint:fix": "eslint . --fix --max-warnings 0",
-    "sync:contract": "node scripts/sync-contract.mjs"
+    "lint:fix": "eslint . --fix --max-warnings 0"
   },
   "dependencies": {
-    "@nomercy-entertainment/nomercy-music-player": "file:../../packages/player-web/nomercy-music-player",
-    "@nomercy-entertainment/nomercy-player-core": "file:../../packages/player-web/nomercy-player-core",
-    "@nomercy-entertainment/nomercy-video-player": "file:../../packages/player-web/nomercy-video-player",
+    "@nomercy-entertainment/nomercy-music-player": "file:../../../packages/player-web/nomercy-music-player",
+    "@nomercy-entertainment/nomercy-player-core": "file:../../../packages/player-web/nomercy-player-core",
+    "@nomercy-entertainment/nomercy-video-player": "file:../../../packages/player-web/nomercy-video-player",
     "ajv": "^8.17.0"
   },
   "devDependencies": {
