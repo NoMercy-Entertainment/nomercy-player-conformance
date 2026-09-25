@@ -1,0 +1,28 @@
+{
+  "name": "@nomercy-entertainment/player-scenarios",
+  "type": "module",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "check": "vitest run",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix --max-warnings 0",
+    "sync:contract": "node scripts/sync-contract.mjs"
+  },
+  "dependencies": {
+    "@nomercy-entertainment/nomercy-music-player": "file:../../packages/player-web/nomercy-music-player",
+    "@nomercy-entertainment/nomercy-player-core": "file:../../packages/player-web/nomercy-player-core",
+    "@nomercy-entertainment/nomercy-video-player": "file:../../packages/player-web/nomercy-video-player",
+    "ajv": "^8.17.0"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^9.0.0",
+    "@types/node": "^25.9.0",
+    "eslint": "^10.4.0",
+    "happy-dom": "^20.9.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.6"
+  }
+}

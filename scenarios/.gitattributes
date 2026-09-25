@@ -1,0 +1,3 @@
+# Force LF so generated fixtures are byte-stable across OSes and the
+# drift check never false-fails after a Windows checkout.
+* text=auto eol=lf

@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://nomercy.tv/player/scenario.schema.json",
+  "title": "Player behavioral scenario set",
+  "type": "object",
+  "required": ["contractVersion", "scenarios"],
+  "additionalProperties": false,
+  "properties": {
+    "contractVersion": { "type": "string" },
+    "scenarios": { "type": "array", "items": { "$ref": "#/definitions/scenario" } }
+  },
+  "definitions": {
+    "scenario": {
+      "type": "object",
+      "required": ["id", "name", "medium", "actions", "expect"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$" },
+        "name": { "type": "string" },
+        "medium": { "enum": ["both", "video", "music"] },
+        "playlist": { "type": "array", "items": { "type": "object" } },
+        "config": { "type": "object" },
+        "actions": { "type": "array", "items": { "$ref": "#/definitions/action" } },
+        "expect": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "action": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "method": { "type": "string" },
+        "args": { "type": "array" },
+        "preventVia": { "type": "string" },
+        "backend": { "type": "string" }
+      },
+      "oneOf": [
+        { "required": ["method"] },
+        { "required": ["backend"] },
+        { "required": ["preventVia"] }
+      ]
+    }
+  }
+}
