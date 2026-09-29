@@ -11,7 +11,7 @@ jobs:
     runs-on: [self-hosted, Linux, X64, beast-unit]
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           path: testing/nomercy-player-conformance
 
@@ -20,17 +20,17 @@ jobs:
       # test that touches a real package root failed on a path that only exists
       # inside the monorepo. All three are public, and they are the subject of
       # the run rather than a dependency on anyone's private layout.
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: NoMercy-Entertainment/nomercy-player-core
           path: packages/player-web/nomercy-player-core
           fetch-depth: 0
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: NoMercy-Entertainment/nomercy-video-player
           path: packages/player-web/nomercy-video-player
           fetch-depth: 0
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: NoMercy-Entertainment/nomercy-music-player
           path: packages/player-web/nomercy-music-player
@@ -39,18 +39,18 @@ jobs:
       # The Swift facade extractor reads the shipped facades out of the native
       # repos. Same reasoning as the three above: public, and the subject of the
       # run rather than someone's private layout.
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: NoMercy-Entertainment/nomercy-video-player-kmp
           path: packages/player-kmp/nomercy-video-player-kmp
           fetch-depth: 0
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: NoMercy-Entertainment/nomercy-music-player-kmp
           path: packages/player-kmp/nomercy-music-player-kmp
           fetch-depth: 0
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
 
@@ -84,11 +84,11 @@ jobs:
     runs-on: [self-hosted, Linux, X64, beast-unit]
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           path: testing/nomercy-player-conformance
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
 
@@ -111,24 +111,24 @@ jobs:
     runs-on: [self-hosted, Linux, X64, beast-unit]
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           path: testing/nomercy-player-conformance
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: NoMercy-Entertainment/nomercy-player-core
           path: packages/player-web/nomercy-player-core
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: NoMercy-Entertainment/nomercy-video-player
           path: packages/player-web/nomercy-video-player
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: NoMercy-Entertainment/nomercy-music-player
           path: packages/player-web/nomercy-music-player
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
 
