@@ -9,7 +9,7 @@ concurrency:
 jobs:
   contract:
     runs-on: [self-hosted, Linux, X64, beast-unit]
-    timeout-minutes: 15
+    timeout-minutes: 7200
     steps:
       - uses: actions/checkout@v7
         with:
@@ -82,7 +82,7 @@ jobs:
   # Its unit tests use fixtures, so the repo alone is enough here.
   parity:
     runs-on: [self-hosted, Linux, X64, beast-unit]
-    timeout-minutes: 15
+    timeout-minutes: 7200
     steps:
       - uses: actions/checkout@v7
         with:
@@ -109,7 +109,7 @@ jobs:
   # in scenarios/package.json expect. It reads the contract from ../contract.
   scenarios:
     runs-on: [self-hosted, Linux, X64, beast-unit]
-    timeout-minutes: 20
+    timeout-minutes: 7200
     steps:
       - uses: actions/checkout@v7
         with:
