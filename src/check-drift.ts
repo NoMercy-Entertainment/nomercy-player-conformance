@@ -45,9 +45,22 @@ export function checkReleased(contract: Contract): ReleaseCheck {
   return { ok: true, reason: `v${version}, clean and at its tag` };
 }
 
+// commit, commitsAheadOfTag and dirty say where the sibling repo's HEAD sits on
+// the day of the run. They change on every commit to player-core, so a byte
+// comparison failed on commits that touched no API. They stay in the file as
+// provenance and stay covered by checkReleased; drift compares the surface and
+// the version the native ports pin to.
+const VOLATILE_PROVENANCE: readonly string[] = ['commit', 'commitsAheadOfTag', 'dirty'];
+
+export function comparableContract(serialized: string): string {
+  const parsed: { provenance?: Record<string, unknown> } = JSON.parse(serialized);
+  for (const key of VOLATILE_PROVENANCE) delete parsed.provenance?.[key];
+  return `${JSON.stringify(parsed, null, 2)}\n`;
+}
+
 export function checkDrift(): { ok: boolean; diff: string } {
-  const fresh = `${JSON.stringify(buildContract(), null, 2)}\n`;
-  const committed = readFileSync(CONTRACT_PATH, 'utf8');
+  const fresh = comparableContract(JSON.stringify(buildContract()));
+  const committed = comparableContract(readFileSync(CONTRACT_PATH, 'utf8'));
 
   if (fresh === committed) return { ok: true, diff: '' };
 

@@ -1,9 +1,9 @@
 {
-  "version": "2.2.3",
+  "version": "2.2.5",
   "provenance": {
-    "version": "2.2.3",
-    "commit": "54e171e",
-    "commitsAheadOfTag": 0,
+    "version": "2.2.5",
+    "commit": "c401fa2",
+    "commitsAheadOfTag": 5,
     "dirty": false
   },
   "events": [
