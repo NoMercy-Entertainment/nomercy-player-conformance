@@ -12,12 +12,12 @@ consumer can actually call. Reading the ABI rather than Kotlin source means the
 report and the API gate cannot disagree.
 
 ```bash
-npm install
-npm run report   # writes out/parity.md and out/parity.json
-npm run check    # fails if any group lost a method since the baseline
+yarn install
+yarn report   # writes out/parity.md and out/parity.json
+yarn check    # fails if any group lost a method since the baseline
 ```
 
-`npm run check -- --write` re-baselines after a genuine gain.
+`yarn check --write` re-baselines after a genuine gain.
 
 ## What the verdicts mean
 

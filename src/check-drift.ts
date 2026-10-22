@@ -84,7 +84,7 @@ export function checkDrift(): { ok: boolean; diff: string } {
 if (process.argv[1]?.endsWith('check-drift.ts')) {
   const result = checkDrift();
   if (!result.ok) {
-    process.stderr.write(`Player contract drift: ${result.diff}\nRun 'npm run generate' and commit.\n`);
+    process.stderr.write(`Player contract drift: ${result.diff}\nRun 'yarn generate' and commit.\n`);
     process.exit(1);
   }
 

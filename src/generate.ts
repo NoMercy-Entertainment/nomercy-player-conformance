@@ -89,7 +89,7 @@ export function buildContract(): Contract {
 
 const CONTRACT_PATH: string = `${dirname(fileURLToPath(import.meta.url))}/../contract/contract.json`;
 
-// Entrypoint: `npm run generate`.
+// Entrypoint: `yarn generate`.
 if (process.argv[1]?.endsWith('generate.ts')) {
   mkdirSync(dirname(CONTRACT_PATH), { recursive: true });
   writeFileSync(CONTRACT_PATH, `${JSON.stringify(buildContract(), null, 2)}\n`);

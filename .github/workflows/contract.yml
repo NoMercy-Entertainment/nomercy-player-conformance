@@ -54,20 +54,23 @@ jobs:
         with:
           node-version: 22
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install
         working-directory: testing/nomercy-player-conformance
-        run: npm ci
+        run: yarn install --immutable
 
       - name: Test
         working-directory: testing/nomercy-player-conformance
-        run: npm test
+        run: yarn test
 
       # Drift is the daily gate: the committed contract must still match what the
       # generator produces. It also prints whether the surface is released, which
       # needs the tags it compares against — hence fetch-depth: 0 above.
       - name: Drift
         working-directory: testing/nomercy-player-conformance
-        run: npm run check
+        run: yarn run check
 
       # Released-ness is a publish gate, not a push gate. It is true on every
       # push where anything at all is unpublished, so gating every push on it
@@ -76,7 +79,7 @@ jobs:
       - name: Released surface
         if: startsWith(github.ref, 'refs/tags/')
         working-directory: testing/nomercy-player-conformance
-        run: npm run check:release
+        run: yarn run check:release
 
   # The parity grader reads the contract above and the KMP trio's ABI dumps.
   # Its unit tests use fixtures, so the repo alone is enough here.
@@ -92,17 +95,20 @@ jobs:
         with:
           node-version: 22
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install
         working-directory: testing/nomercy-player-conformance/parity
-        run: npm ci
+        run: yarn install --immutable
 
       - name: Typecheck
         working-directory: testing/nomercy-player-conformance/parity
-        run: npx tsc --noEmit
+        run: yarn tsc --noEmit
 
       - name: Test
         working-directory: testing/nomercy-player-conformance/parity
-        run: npm test
+        run: yarn test
 
   # The scenario harness drives the real trio, so the trio has to be here and
   # built. The relative paths mirror the monorepo, which is what the file: deps
@@ -132,27 +138,30 @@ jobs:
         with:
           node-version: 22
 
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Build the trio the harness drives
         run: |
           for package in nomercy-player-core nomercy-video-player nomercy-music-player; do
-            npm ci --prefix "packages/player-web/$package" || npm install --prefix "packages/player-web/$package"
-            npm run build --prefix "packages/player-web/$package"
+            (cd "packages/player-web/$package" && yarn install && yarn run build)
           done
 
       - name: Install
         working-directory: testing/nomercy-player-conformance/scenarios
-        run: npm install
+        # The file: deps hash the freshly built trio, so --immutable would always fail.
+        run: yarn install
 
       - name: Typecheck
         working-directory: testing/nomercy-player-conformance/scenarios
-        run: npx tsc --noEmit
+        run: yarn tsc --noEmit
 
       - name: Lint
         working-directory: testing/nomercy-player-conformance/scenarios
-        run: npm run lint
+        run: yarn run lint
 
       # Runs the whole scenario set against both real players, plus the planted
       # drift proof that shows a failure is actually reported.
       - name: Scenarios
         working-directory: testing/nomercy-player-conformance/scenarios
-        run: npm test
+        run: yarn test
