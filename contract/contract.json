@@ -1,9 +1,9 @@
 {
-  "version": "2.2.5",
+  "version": "2.3.0",
   "provenance": {
-    "version": "2.2.5",
-    "commit": "c401fa2",
-    "commitsAheadOfTag": 5,
+    "version": "2.3.0",
+    "commit": "1c3dbdc",
+    "commitsAheadOfTag": 0,
     "dirty": false
   },
   "events": [
@@ -3818,6 +3818,7 @@
     "canvas:render/renderer-failed",
     "core:auth/forbidden",
     "core:auth/refresh-failed",
+    "core:auth/request-build-failed",
     "core:auth/unauthenticated",
     "core:drm/license-url-missing",
     "core:lifecycle/already-setup",
@@ -3833,6 +3834,7 @@
     "core:network/client-error",
     "core:network/gateway-timeout",
     "core:network/gone",
+    "core:network/invalid-request",
     "core:network/not-found",
     "core:network/offline",
     "core:network/parse-failed",
@@ -3875,6 +3877,7 @@
     "plugin:canvas/not-mounted",
     "plugin:lyrics/fetch-failed",
     "plugin:lyrics/no-parser",
+    "plugin:octopus/font-load-failed",
     "plugin:octopus/fonts-manifest-failed",
     "plugin:octopus/load-failed",
     "plugin:octopus/render-error",
@@ -4639,6 +4642,24 @@
       "kind": "class",
       "area": "plugins",
       "file": "plugins/equalizer/index.ts"
+    },
+    {
+      "name": "FrameDataTexture",
+      "kind": "class",
+      "area": "plugins",
+      "file": "plugins/visualization/frame-texture.ts"
+    },
+    {
+      "name": "GpuSurface",
+      "kind": "class",
+      "area": "plugins",
+      "file": "plugins/visualization/gpu-surface.ts"
+    },
+    {
+      "name": "GpuSurfaceOptions",
+      "kind": "interface",
+      "area": "plugins",
+      "file": "plugins/visualization/gpu-surface.ts"
     },
     {
       "name": "KeyBindings",
