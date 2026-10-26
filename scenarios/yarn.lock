@@ -378,29 +378,29 @@ __metadata:
   linkType: hard
 
 "@nomercy-entertainment/nomercy-music-player@file:../../../packages/player-web/nomercy-music-player::locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A.":
-  version: 2.2.7
-  resolution: "@nomercy-entertainment/nomercy-music-player@file:../../../packages/player-web/nomercy-music-player#../../../packages/player-web/nomercy-music-player::hash=278b50&locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A."
+  version: 2.3.0
+  resolution: "@nomercy-entertainment/nomercy-music-player@file:../../../packages/player-web/nomercy-music-player#../../../packages/player-web/nomercy-music-player::hash=02444c&locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A."
   dependencies:
-    "@nomercy-entertainment/nomercy-player-core": "npm:2.2.7"
-  checksum: 10c0/8dc4febc48f16bc20ab3aa5c50196035ad5e85cb5a3b6bea703f5dfde3e44c1b4037a9026646ae1467e7309ca1262499ee36edd1bbdf3a0047a94b334efb52ec
+    "@nomercy-entertainment/nomercy-player-core": "npm:2.3.0"
+  checksum: 10c0/3cb7e34fce1569e5e7ce9d008815bc61b473962ebd59e7c4d4526e0ca7af5556bca93667a84f4469b63702d1c2aa41d227a6b31fe62f3806bfdd809c6ac66d23
   languageName: node
   linkType: hard
 
 "@nomercy-entertainment/nomercy-player-core@file:../../../packages/player-web/nomercy-player-core::locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A.":
-  version: 2.2.7
-  resolution: "@nomercy-entertainment/nomercy-player-core@file:../../../packages/player-web/nomercy-player-core#../../../packages/player-web/nomercy-player-core::hash=cc9d92&locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A."
+  version: 2.3.0
+  resolution: "@nomercy-entertainment/nomercy-player-core@file:../../../packages/player-web/nomercy-player-core#../../../packages/player-web/nomercy-player-core::hash=3719e0&locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A."
   dependencies:
     hls.js: "npm:^1.6.0"
-  checksum: 10c0/9c759dd19755c8777961f5e30b647c9cba57f7f6047475bdd08760b3ac2772759499b25914ad099b47046700bfbaa724f7cee7e2536440f9d68674b30bb7cd9f
+  checksum: 10c0/76ea8b7a95556c19a672f9c9749ab23ff455c6ef688f47c144dca8eb0e9ccb3e78a4d64dd5cfcac143a8652da12016104c0564e6bc89a3ab1e2307f6013091f3
   languageName: node
   linkType: hard
 
-"@nomercy-entertainment/nomercy-player-core@npm:2.2.7":
-  version: 2.2.7
-  resolution: "@nomercy-entertainment/nomercy-player-core@npm:2.2.7"
+"@nomercy-entertainment/nomercy-player-core@npm:2.3.0":
+  version: 2.3.0
+  resolution: "@nomercy-entertainment/nomercy-player-core@npm:2.3.0"
   dependencies:
     hls.js: "npm:^1.6.0"
-  checksum: 10c0/fdcf626aadc365a35d363cc1f00596ea2ece4f4442a2bbba3b7c69c8e926512289b3a6ee32dfd8b17346f9c51a52400ace83ae6d2027f11a33dfa779a018d533
+  checksum: 10c0/1c8be98321f1090afcce49f2d36f178cbe03cebc5c1be8048af01eb52875eb1e84f569cf87503954324e3ffdacc6c29448792d6ab445bd78f03c3772e7cc3fac
   languageName: node
   linkType: hard
 
@@ -412,12 +412,12 @@ __metadata:
   linkType: hard
 
 "@nomercy-entertainment/nomercy-video-player@file:../../../packages/player-web/nomercy-video-player::locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A.":
-  version: 2.2.8
-  resolution: "@nomercy-entertainment/nomercy-video-player@file:../../../packages/player-web/nomercy-video-player#../../../packages/player-web/nomercy-video-player::hash=015cff&locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A."
+  version: 2.3.0
+  resolution: "@nomercy-entertainment/nomercy-video-player@file:../../../packages/player-web/nomercy-video-player#../../../packages/player-web/nomercy-video-player::hash=82516c&locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A."
   dependencies:
-    "@nomercy-entertainment/nomercy-player-core": "npm:2.2.7"
+    "@nomercy-entertainment/nomercy-player-core": "npm:2.3.0"
     "@nomercy-entertainment/nomercy-subtitle-octopus": "npm:^0.1.0"
-  checksum: 10c0/7ae5c12b24e642c11a5b888cc99db434feb8d6619cef9a13b096ca96bd55d11da8638dde7d7e98134e3f9cbbdcea7eb32b97a464566c44ae141babc8b20b8554
+  checksum: 10c0/abd527007fcc7e4b4c72c266c63eebfbee5105ceb9235c711cf238b057764975f5ec360ccbb5ee851882e9a4cdc8c50160d5c3a1a9a8e17073f4345c2a11262b
   languageName: node
   linkType: hard
 

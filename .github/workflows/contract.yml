@@ -150,7 +150,8 @@ jobs:
       - name: Install
         working-directory: testing/nomercy-player-conformance/scenarios
         # The file: deps hash the freshly built trio, so --immutable would always fail.
-        run: yarn install
+        # Yarn turns --immutable on by itself when CI is set, so turn it off here.
+        run: yarn install --no-immutable
 
       - name: Typecheck
         working-directory: testing/nomercy-player-conformance/scenarios
