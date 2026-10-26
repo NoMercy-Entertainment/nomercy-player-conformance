@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # Security updates only. scenarios/ installs the trio through file: paths outside
+  # this repo, which Dependabot cannot fetch; its CI refreshes that lockfile instead.
+  - package-ecosystem: npm
+    directories:
+      - /
+      - /parity
+    exclude-paths:
+      - scenarios/**
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
