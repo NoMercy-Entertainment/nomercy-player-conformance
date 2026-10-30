@@ -378,29 +378,29 @@ __metadata:
   linkType: hard
 
 "@nomercy-entertainment/nomercy-music-player@file:../../../packages/player-web/nomercy-music-player::locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A.":
-  version: 2.3.0
-  resolution: "@nomercy-entertainment/nomercy-music-player@file:../../../packages/player-web/nomercy-music-player#../../../packages/player-web/nomercy-music-player::hash=02444c&locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A."
+  version: 2.4.0
+  resolution: "@nomercy-entertainment/nomercy-music-player@file:../../../packages/player-web/nomercy-music-player#../../../packages/player-web/nomercy-music-player::hash=01088b&locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A."
   dependencies:
-    "@nomercy-entertainment/nomercy-player-core": "npm:2.3.0"
-  checksum: 10c0/3cb7e34fce1569e5e7ce9d008815bc61b473962ebd59e7c4d4526e0ca7af5556bca93667a84f4469b63702d1c2aa41d227a6b31fe62f3806bfdd809c6ac66d23
+    "@nomercy-entertainment/nomercy-player-core": "npm:2.4.0"
+  checksum: 10c0/0664434647edda9e59b78a6843a86b64cba0704f42e2075779f08a349551a1581c67729d157e2e3845e5a23e03b4bb23f6610f3b61c88b19f6be98c00b70ea5e
   languageName: node
   linkType: hard
 
 "@nomercy-entertainment/nomercy-player-core@file:../../../packages/player-web/nomercy-player-core::locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A.":
-  version: 2.3.0
-  resolution: "@nomercy-entertainment/nomercy-player-core@file:../../../packages/player-web/nomercy-player-core#../../../packages/player-web/nomercy-player-core::hash=3719e0&locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A."
+  version: 2.4.0
+  resolution: "@nomercy-entertainment/nomercy-player-core@file:../../../packages/player-web/nomercy-player-core#../../../packages/player-web/nomercy-player-core::hash=dad652&locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A."
   dependencies:
     hls.js: "npm:^1.6.0"
-  checksum: 10c0/76ea8b7a95556c19a672f9c9749ab23ff455c6ef688f47c144dca8eb0e9ccb3e78a4d64dd5cfcac143a8652da12016104c0564e6bc89a3ab1e2307f6013091f3
+  checksum: 10c0/0bb091328d0a575e1d4135bb22f1d121d8cdac8e73d916dde5f1192befbe9622becbdae1c30ef087e1593012c639b27c97667048b7d0dda4e2df9cefab783a9c
   languageName: node
   linkType: hard
 
-"@nomercy-entertainment/nomercy-player-core@npm:2.3.0":
-  version: 2.3.0
-  resolution: "@nomercy-entertainment/nomercy-player-core@npm:2.3.0"
+"@nomercy-entertainment/nomercy-player-core@npm:2.4.0":
+  version: 2.4.0
+  resolution: "@nomercy-entertainment/nomercy-player-core@npm:2.4.0"
   dependencies:
     hls.js: "npm:^1.6.0"
-  checksum: 10c0/1c8be98321f1090afcce49f2d36f178cbe03cebc5c1be8048af01eb52875eb1e84f569cf87503954324e3ffdacc6c29448792d6ab445bd78f03c3772e7cc3fac
+  checksum: 10c0/f5f9eec95c12561fbc887f0e797e800b8a2c861a0f9954c05f858c390864df8c50a9ed69b54629b162e118e5f997eed874a6742483f57b5dd6bec36ddc751157
   languageName: node
   linkType: hard
 
@@ -412,12 +412,12 @@ __metadata:
   linkType: hard
 
 "@nomercy-entertainment/nomercy-video-player@file:../../../packages/player-web/nomercy-video-player::locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A.":
-  version: 2.3.0
-  resolution: "@nomercy-entertainment/nomercy-video-player@file:../../../packages/player-web/nomercy-video-player#../../../packages/player-web/nomercy-video-player::hash=82516c&locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A."
+  version: 2.4.0
+  resolution: "@nomercy-entertainment/nomercy-video-player@file:../../../packages/player-web/nomercy-video-player#../../../packages/player-web/nomercy-video-player::hash=6c953d&locator=%40nomercy-entertainment%2Fplayer-scenarios%40workspace%3A."
   dependencies:
-    "@nomercy-entertainment/nomercy-player-core": "npm:2.3.0"
+    "@nomercy-entertainment/nomercy-player-core": "npm:2.4.0"
     "@nomercy-entertainment/nomercy-subtitle-octopus": "npm:^0.1.0"
-  checksum: 10c0/abd527007fcc7e4b4c72c266c63eebfbee5105ceb9235c711cf238b057764975f5ec360ccbb5ee851882e9a4cdc8c50160d5c3a1a9a8e17073f4345c2a11262b
+  checksum: 10c0/e8691d2f8102876e0fa30f4c2d94b86fe236423a846411441fd381cb9f41232c1ae7b267cf346cdafe0e20a1a0669299019b3b7c129e6682d67aafccf5dd6e52
   languageName: node
   linkType: hard
 
@@ -432,7 +432,7 @@ __metadata:
     "@types/node": "npm:^25.9.0"
     ajv: "npm:^8.17.0"
     eslint: "npm:^10.4.0"
-    happy-dom: "npm:^20.9.0"
+    happy-dom: "npm:^21.0.4"
     typescript: "npm:^6.0.3"
     vitest: "npm:^4.1.11"
   languageName: unknown
@@ -2044,9 +2044,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"happy-dom@npm:^20.9.0":
-  version: 20.11.1
-  resolution: "happy-dom@npm:20.11.1"
+"happy-dom@npm:^21.0.4":
+  version: 21.0.4
+  resolution: "happy-dom@npm:21.0.4"
   dependencies:
     "@types/node": "npm:>=20.0.0"
     "@types/whatwg-mimetype": "npm:^3.0.2"
@@ -2055,7 +2055,7 @@ __metadata:
     entities: "npm:^7.0.1"
     whatwg-mimetype: "npm:^3.0.0"
     ws: "npm:^8.21.0"
-  checksum: 10c0/f2335e8b87f1917c3725051c22dd7dafef13229af0dde9412d146fbaa961713a81ca4dcc741ecef8bf5fb64ea4182e3886305ac93ecb822dec7be028a6f7c51e
+  checksum: 10c0/9368af9739a5ba07776a116368d13d6b2690de81a6525096a1fec36e4cd1270b569151d021e2a56fb314fba73674572de562f1364090b01df6c68e9843b002e8
   languageName: node
   linkType: hard
 
