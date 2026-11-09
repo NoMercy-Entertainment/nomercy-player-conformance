@@ -1,8 +1,8 @@
 {
-  "version": "2.5.0",
+  "version": "2.6.1",
   "provenance": {
-    "version": "2.5.0",
-    "commit": "82626da",
+    "version": "2.6.1",
+    "commit": "4d03f5d",
     "commitsAheadOfTag": 0,
     "dirty": false
   },
@@ -295,6 +295,11 @@
     {
       "name": "itemEndingSoon",
       "payload": "{ remaining: number; item: I }",
+      "map": "base"
+    },
+    {
+      "name": "itemSkipped",
+      "payload": "{ item: I; status: number }",
       "map": "base"
     },
     {
@@ -835,6 +840,11 @@
     {
       "name": "levels",
       "payload": "{ levels: QualityLevel[] }",
+      "map": "video"
+    },
+    {
+      "name": "live",
+      "payload": "{ live: boolean }",
       "map": "video"
     },
     {
@@ -2775,6 +2785,16 @@
       ]
     },
     {
+      "name": "live",
+      "signature": "() => boolean",
+      "player": "video",
+      "group": "video/player",
+      "kind": "method",
+      "arities": [
+        0
+      ]
+    },
+    {
       "name": "load",
       "signature": "(item: T, opts?: LoadOptions) => Promise<void>",
       "player": "video",
@@ -3870,6 +3890,7 @@
     "core:stream/hls-attach-failed",
     "core:stream/media-absent",
     "core:stream/no-factory-match",
+    "core:stream/server-error",
     "core:test/getplugin-returned-undefined",
     "core:test/listener-leak",
     "core:test/player-missing-addplugin",
@@ -3883,6 +3904,9 @@
     "plugin:octopus/render-error",
     "plugin:scrobble/now-playing-failed",
     "plugin:scrobble/scrobble-failed",
+    "plugin:twitch/clip-unavailable",
+    "plugin:twitch/stream-unavailable",
+    "plugin:twitch/title-unavailable",
     "video:media/hdr-unplayable",
     "visualization:render/failed"
   ],
