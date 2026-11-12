@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { buildContract, Contract } from './generate';
+import { buildContract, Contract, coreTag } from './generate';
 
 const CONTRACT_PATH: string = `${dirname(fileURLToPath(import.meta.url))}/../contract/contract.json`;
 
@@ -26,14 +26,14 @@ export function checkReleased(contract: Contract): ReleaseCheck {
   }
 
   if (commitsAheadOfTag < 0) {
-    return { ok: false, reason: `no v${version} tag exists, so there is no released surface to describe` };
+    return { ok: false, reason: `no ${coreTag(version)} tag exists, so there is no released surface to describe` };
   }
 
   if (commitsAheadOfTag > 0) {
     return {
       ok: false,
       reason:
-        `the source is ${commitsAheadOfTag} commit(s) ahead of v${version}, so this contract describes `
+        `the source is ${commitsAheadOfTag} commit(s) ahead of ${coreTag(version)}, so this contract describes `
         + 'unreleased API. Publish the trio before a native port pins to it',
     };
   }
@@ -42,7 +42,7 @@ export function checkReleased(contract: Contract): ReleaseCheck {
   // indistinguishable from a check that returned before it looked at anything,
   // and this is the one that decides whether a native port may pin to a
   // contract at all.
-  return { ok: true, reason: `v${version}, clean and at its tag` };
+  return { ok: true, reason: `${coreTag(version)}, clean and at its tag` };
 }
 
 // commit, commitsAheadOfTag and dirty say where the sibling repo's HEAD sits on

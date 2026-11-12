@@ -1,4 +1,4 @@
-import { ClassDeclaration, Project, SyntaxKind, TypeNode } from 'ts-morph';
+import { ClassDeclaration, Project, PropertySignature, SourceFile, SyntaxKind, TypeNode } from 'ts-morph';
 
 import { extractGroups } from './extract-groups';
 import { PACKAGES } from './paths';
@@ -105,16 +105,44 @@ function normalizeNewlines(text: string): string {
   return text.replace(/\r\n/g, '\n');
 }
 
+// The class merges with an interface of its own name that extends core's
+// ComposedPlayerMethods; that interface carries most of the surface.
+function mergedMembers(source: SourceFile, cls: string): PropertySignature[] {
+  const merged = source.getInterface(cls);
+  if (!merged) return [];
+
+  return merged.getExtends().flatMap((heritage) => {
+    const symbol = heritage.getExpression().getSymbol();
+    const target = symbol?.getAliasedSymbol() ?? symbol;
+    return (target?.getDeclarations() ?? [])
+      .map(declaration => declaration.asKind(SyntaxKind.InterfaceDeclaration))
+      .filter(declaration => declaration !== undefined)
+      .flatMap(declaration => declaration.getProperties());
+  });
+}
+
 function readClass(spec: PlayerSpec, groups: Map<string, string>): MethodEntry[] {
-  const project: Project = new Project({ tsConfigFilePath: spec.tsconfig, skipAddingFilesFromTsConfig: true });
+  // Core resolves to its source, so the generator needs no build of core.
+  const project: Project = new Project({
+    tsConfigFilePath: spec.tsconfig,
+    skipAddingFilesFromTsConfig: true,
+    compilerOptions: {
+      paths: {
+        '@nomercy-entertainment/nomercy-player-core': [`${PACKAGES.core}/src/index.ts`],
+        '@nomercy-entertainment/nomercy-player-core/*': [`${PACKAGES.core}/src/*`],
+      },
+    },
+  });
   const source = project.addSourceFileAtPath(spec.file);
   const cls: ClassDeclaration = source.getClassOrThrow(spec.cls);
 
   const entries: MethodEntry[] = [];
 
   const own = `${spec.player}/player`;
+  const declared = new Set<string>([...cls.getProperties(), ...cls.getMethods()].map(member => member.getName()));
+  const inherited = mergedMembers(source, spec.cls).filter(member => !declared.has(member.getName()));
 
-  for (const prop of cls.getProperties()) {
+  for (const prop of [...cls.getProperties(), ...inherited]) {
     if (!isPublic(prop.getName())) continue;
     entries.push({
       name: prop.getName(),

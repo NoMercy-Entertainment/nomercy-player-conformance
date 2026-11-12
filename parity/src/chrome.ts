@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 
-import { NATIVE, REPO_ROOT } from './paths';
+import { NATIVE, PLAYER_WEB } from './paths';
 
 // The chrome cannot be graded by method.
 //
@@ -16,10 +16,9 @@ import { NATIVE, REPO_ROOT } from './paths';
 // and a control quietly dropped from either is a finding.
 
 const WEB_CHROME: string = resolve(
-  REPO_ROOT,
+  PLAYER_WEB,
   'packages',
-  'player-web',
-  'nomercy-video-player',
+  'video-player',
   'src',
   'plugins',
   'desktop-ui',

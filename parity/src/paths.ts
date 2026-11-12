@@ -9,6 +9,10 @@ const here: string = dirname(fileURLToPath(import.meta.url));
 export const CONFORMANCE_ROOT: string = resolve(here, '..', '..');
 export const REPO_ROOT: string = resolve(here, '..', '..', '..', '..');
 
+/** The web players' repo; NM_PLAYER_WEB points at another checkout of it. */
+export const PLAYER_WEB: string = process.env.NM_PLAYER_WEB
+  ?? resolve(REPO_ROOT, 'packages', 'player-web', 'nomercy-player-web');
+
 /** The web oracle: the generated contract every native port is graded against. */
 export const CONTRACT: string = resolve(CONFORMANCE_ROOT, 'contract', 'contract.json');
 

@@ -16,6 +16,7 @@ function contractWith(provenance: Partial<Provenance>): Contract {
     events: [],
     methods: [],
     errors: [],
+    types: [],
   };
 }
 
@@ -29,7 +30,13 @@ describe('checkReleased', () => {
 
     expect(result.ok).toBe(false);
     expect(result.reason).toContain('1 commit');
-    expect(result.reason).toContain('v2.0.1');
+    expect(result.reason).toContain('core-v2.0.1');
+  });
+
+  it('names the tag the way nomercy-player-web tags core', async () => {
+    const { coreTag } = await import('../generate');
+
+    expect(coreTag('2.6.1')).toBe('core-v2.6.1');
   });
 
   it('rejects a dirty tree, which describes nothing reproducible', () => {
@@ -43,7 +50,7 @@ describe('checkReleased', () => {
     const result = checkReleased(contractWith({ commitsAheadOfTag: -1 }));
 
     expect(result.ok).toBe(false);
-    expect(result.reason).toContain('no v2.0.1 tag');
+    expect(result.reason).toContain('no core-v2.0.1 tag');
   });
 
   it('reports the real repository state, whatever it currently is', async () => {

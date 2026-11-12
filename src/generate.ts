@@ -54,6 +54,11 @@ export function contractVersion(): string {
   return parsed.version;
 }
 
+// nomercy-player-web tags each package on its own; the contract follows core's tag.
+export function coreTag(version: string): string {
+  return `core-v${version}`;
+}
+
 function git(args: string): string {
   return execFileSync('git', args.split(' '), { cwd: PACKAGES.core, encoding: 'utf8' }).trim();
 }
@@ -69,7 +74,7 @@ export function provenance(): Provenance {
   let commitsAheadOfTag: number = 0;
 
   try {
-    commitsAheadOfTag = Number(git(`rev-list --count v${version}..HEAD`));
+    commitsAheadOfTag = Number(git(`rev-list --count ${coreTag(version)}..HEAD`));
   }
   catch {
     commitsAheadOfTag = -1; // no tag for this version yet
