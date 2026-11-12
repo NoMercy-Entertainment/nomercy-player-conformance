@@ -102,8 +102,9 @@ jobs:
         run: yarn test
 
   # The scenario harness drives the real trio, so the trio has to be here and
-  # built. The relative paths mirror the monorepo, which is what the file: deps
-  # in scenarios/package.json expect. It reads the contract from ../contract.
+  # built. The relative paths mirror the monorepo, which is what the link: deps
+  # in scenarios/package.json expect (link:, because the trio's own workspace:
+  # ranges only resolve inside nomercy-player-web). It reads the contract from ../contract.
   scenarios:
     runs-on: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","Linux","X64","beast-unit"]') || 'ubuntu-latest' }}
     timeout-minutes: 7200
@@ -130,7 +131,7 @@ jobs:
 
       - name: Install
         working-directory: testing/nomercy-player-conformance/scenarios
-        # The file: deps hash the freshly built trio, so --immutable would always fail.
+        # The lockfile cannot pin the freshly built trio, so --immutable would always fail.
         # Yarn turns --immutable on by itself when CI is set, so turn it off here.
         run: yarn install --no-immutable
 
