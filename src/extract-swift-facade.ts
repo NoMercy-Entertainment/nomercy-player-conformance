@@ -100,6 +100,8 @@ export const FACADE_RECONCILIATION: Record<string, string> = {
   selectedAudioID: 'currentAudioTrack',
   subtitleOptions: 'subtitleTracks',
   selectedSubtitleID: 'currentSubtitleTrack',
+  // The drop-in's own renderer draws from these (video-kmp #17); empty by default.
+  subtitleCues: 'subtitleCue, the cues of the selected subtitle track',
   error: 'the error event',
   // The platform surface. The engine does not own an AVPlayer and must not:
   // handing one out is how a library ends up managing somebody else's lifecycle.
