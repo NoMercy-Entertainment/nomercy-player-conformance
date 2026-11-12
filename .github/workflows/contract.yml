@@ -6,9 +6,12 @@ concurrency:
   group: contract-${{ github.ref }}
   cancel-in-progress: true
 
+# A pull request from a fork runs on a GitHub-hosted runner, never on the self-hosted
+# one: this repo is public, and fork code must not reach that machine (AUD-8001).
+# The same expression guards nomercy-player-core-kmp and nomercy-music-player-kmp CI.
 jobs:
   contract:
-    runs-on: [self-hosted, Linux, X64, beast-unit]
+    runs-on: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","Linux","X64","beast-unit"]') || 'ubuntu-latest' }}
     timeout-minutes: 7200
     steps:
       - uses: actions/checkout@v7
@@ -84,7 +87,7 @@ jobs:
   # The parity grader reads the contract above and the KMP trio's ABI dumps.
   # Its unit tests use fixtures, so the repo alone is enough here.
   parity:
-    runs-on: [self-hosted, Linux, X64, beast-unit]
+    runs-on: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","Linux","X64","beast-unit"]') || 'ubuntu-latest' }}
     timeout-minutes: 7200
     steps:
       - uses: actions/checkout@v7
@@ -114,7 +117,7 @@ jobs:
   # built. The relative paths mirror the monorepo, which is what the file: deps
   # in scenarios/package.json expect. It reads the contract from ../contract.
   scenarios:
-    runs-on: [self-hosted, Linux, X64, beast-unit]
+    runs-on: ${{ (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","Linux","X64","beast-unit"]') || 'ubuntu-latest' }}
     timeout-minutes: 7200
     steps:
       - uses: actions/checkout@v7
