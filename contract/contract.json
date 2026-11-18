@@ -1,9 +1,9 @@
 {
-  "version": "2.6.1",
+  "version": "2.9.2",
   "provenance": {
-    "version": "2.6.1",
-    "commit": "629152fe",
-    "commitsAheadOfTag": 1328,
+    "version": "2.9.2",
+    "commit": "c6519cde",
+    "commitsAheadOfTag": 0,
     "dirty": false
   },
   "events": [
@@ -119,7 +119,7 @@
     },
     {
       "name": "beforeLoad",
-      "payload": "BeforeEvent<{ item: I; source?: ActionSource }>",
+      "payload": "BeforeEvent<{\n    item: I;\n    source?: ActionSource;\n    startAt?: number;\n  }>",
       "map": "base"
     },
     {
@@ -295,6 +295,11 @@
     {
       "name": "itemEndingSoon",
       "payload": "{ remaining: number; item: I }",
+      "map": "base"
+    },
+    {
+      "name": "itemFailed",
+      "payload": "{ item: I; error: PlayerErrorEvent['error'] }",
       "map": "base"
     },
     {
